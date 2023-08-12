@@ -1,4 +1,5 @@
-package-lock.json
-node_modules/
-.eslintcache
-.env
+Documentation/
+be/node_modules/
+be/.env
+fe/.env
+fe/node_modules/
