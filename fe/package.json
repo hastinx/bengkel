@@ -5,8 +5,10 @@
     "@fortawesome/fontawesome-free": "5.15.2",
     "axios": "^1.4.0",
     "bootstrap": "5.0.2",
+    "file-saver": "^2.0.5",
     "gulp": "4.0.2",
     "gulp-append-prepend": "1.0.9",
+    "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
     "react": ">=16.8.0",
     "react-bootstrap": "2.4.0",
@@ -15,9 +17,11 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.3",
+    "react-to-print": "^2.14.13",
     "reactstrap": "8.8.1",
     "sass": "1.53.0",
-    "sweetalert2": "^11.7.12"
+    "sweetalert2": "^11.7.12",
+    "xlsx": "^0.18.5"
   },
   "optionalDependencies": {
     "jquery": "3.5.1",

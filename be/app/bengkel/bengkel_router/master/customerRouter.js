@@ -1,6 +1,5 @@
 const { c_mst_customer } = require("../../bengkel_controllers");
 
-const { authKey } = require('../../../../middleware/authKey')
 const router = require('express').Router()
 
 router.get('/master/customer', c_mst_customer.getAll)

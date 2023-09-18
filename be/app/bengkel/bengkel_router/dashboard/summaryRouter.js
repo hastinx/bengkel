@@ -1,3 +1,4 @@
+const { verifyToken } = require('../../../../middleware/authKey')
 const { c_summary_dashboard } = require('../../bengkel_controllers')
 
 const router = require('express').Router()

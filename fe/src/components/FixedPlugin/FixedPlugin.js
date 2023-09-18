@@ -50,7 +50,7 @@ function FixedPlugin({
   // };
   return (
     <div className="fixed-plugin">
-      <Dropdown>
+      {/* <Dropdown>
         <Dropdown.Toggle
           id="dropdown-fixed-plugin"
           variant=""
@@ -218,7 +218,7 @@ function FixedPlugin({
             </Button>
           </li>
         </Dropdown.Menu>
-      </Dropdown>
+      </Dropdown> */}
     </div>
   );
 }

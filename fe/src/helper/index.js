@@ -1,4 +1,5 @@
 export function formatRupiah(angka) {
+    if (angka === null) return 'Rp. 0';
     var number_string = angka.toString().replace(/[^,\d]/g, ''),
         split = number_string.split(','),
         sisa = split[0].length % 3,

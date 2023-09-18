@@ -6,7 +6,7 @@ import { Button, OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
 const TableData = ({ Data, Header, Field, Menu, Action }) => {
 
   return (
-    <Table className="table-hover table-striped">
+    <Table className="table-hover table-striped table-bordered">
       <thead>
         <tr>
           <th className="border-1 text-center">No</th>
@@ -21,7 +21,7 @@ const TableData = ({ Data, Header, Field, Menu, Action }) => {
         </tr>
       </thead>
       <tbody>
-        {Data.length > 0 ? (
+        {Data && Data.length > 0 ? (
           Data.map((el, idx, arr) => {
             return (
               <tr key={el.id}>
@@ -29,8 +29,8 @@ const TableData = ({ Data, Header, Field, Menu, Action }) => {
                 {Field.map((i) =>
                   i === 'harga' || i === 'harga_modal' || i === 'harga_jual' || i === 'ongkos' || i === 'hargaSatuan' || i === 'totalHarga' || i === 'debet' || i === 'kredit' || i === 'piutang' ? (
                     <td key={i} className='text-end border-1'>{formatRupiah(el[i])}</td>
-                  ) : i === 'createdAt' || i === 'tanggal' ? (
-                    <td className='border-1' key={i}>{moment(el[i]).format('DD/MM/YYYY')}</td>
+                  ) : i === 'createdAt' || i === 'tanggal' || i === 'log_createdAt' ? (
+                    <td className='border-1 text-center' key={i}>{moment(el[i]).format('DD/MM/YYYY')}</td>
                   ) : i === 'code' ? (<td key={i}><Button
                     className="btn-simple btn-link p-1 border-1"
                     type="button"
@@ -79,7 +79,7 @@ const TableData = ({ Data, Header, Field, Menu, Action }) => {
                       >
                         Retur
                       </Button>
-                    </OverlayTrigger></> : Menu === 'Detail Transaksi Mekanik' || Menu === 'Detail Transaksi Produk' || Menu === 'Report' ? <></> : <><OverlayTrigger
+                    </OverlayTrigger></> : Menu === 'Detail Transaksi Mekanik' || Menu === 'Detail Transaksi Produk' || Menu === 'Report' ? '' : <><OverlayTrigger
                       overlay={<Tooltip id="tooltip-488980961">Edit</Tooltip>}
                     >
                       <Button

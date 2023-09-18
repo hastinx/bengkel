@@ -15,8 +15,8 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { Component } from "react";
-import { useLocation, Route, Switch } from "react-router-dom";
+import React, { Component, useEffect } from "react";
+import { useLocation, Route, Switch, useHistory } from "react-router-dom";
 
 import AdminNavbar from "components/Navbars/AdminNavbar";
 import Footer from "components/Footer/Footer";
@@ -26,6 +26,7 @@ import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 import routes from "routes.js";
 
 import sidebarImage from "assets/img/sidebar-3.jpg";
+import { getAuthentication } from "helper/api";
 
 function Admin() {
   const [image, setImage] = React.useState(sidebarImage);
@@ -33,6 +34,7 @@ function Admin() {
   const [hasImage, setHasImage] = React.useState(true);
   const location = useLocation();
   const mainPanel = React.useRef(null);
+  const history = useHistory()
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
@@ -48,6 +50,11 @@ function Admin() {
       }
     });
   };
+
+  const auth = async () => {
+    const auth = await getAuthentication()
+    if (!auth) history.push('/')
+  }
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -60,7 +67,13 @@ function Admin() {
       var element = document.getElementById("bodyClick");
       element.parentNode.removeChild(element);
     }
+
+
   }, [location]);
+
+  useEffect(() => {
+    auth()
+  }, [])
   return (
     <>
       <div className="wrapper">

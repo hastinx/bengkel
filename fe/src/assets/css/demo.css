@@ -815,3 +815,30 @@
   display: block;
   width: 100%;
 }
+
+.content-print{
+ display: flex;
+ justify-content: space-between;
+}
+
+@media print {
+    @page {
+        margin: 0;
+    }
+    a[href]:after {
+        content: none !important;
+    }
+    .parentprintarea
+    {
+        visibility: visible;
+        height: initial;
+        position: absolute;
+        top: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 0;
+        box-shadow: none !important;
+        background-color: white !important;
+        background-image: none !important;
+    }
+}

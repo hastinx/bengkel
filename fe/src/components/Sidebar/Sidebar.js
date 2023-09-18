@@ -45,9 +45,11 @@ function Sidebar({ color, image, routes }) {
               <img src={require("assets/img/reactlogo.png")} alt="..." />
             </div>
           </a>
-          <a className="simple-text" href="http://www.creative-tim.com">
+          <span className="fs-bold">
             BENGKEL
-          </a>
+          </span>
+
+
         </div>
         <Nav>
           {routes.map((prop, key) => {

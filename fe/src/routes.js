@@ -31,6 +31,8 @@ import Penjualan from "views/Transaksi/Penjualan";
 import DataPenjualan from "views/Transaksi/DataPenjualan";
 import ReportCash from "views/Report/ReportPenjualanCash";
 import ReportHutang from "views/Report/ReportPenjualanUtang";
+import ReportBalance from "views/Report/ReportBalance";
+import Invoice from "views/Transaksi/Penjualan/invoice";
 
 const dashboardRoutes = [
   {
@@ -118,6 +120,18 @@ const dashboardRoutes = [
     icon: "nc-icon nc-paper-2",
     component: ReportHutang,
     layout: "/admin"
+  },
+  {
+    parent: "Report",
+    path: "/report-balance",
+    name: "Balance",
+    icon: "nc-icon nc-paper-2",
+    component: ReportBalance,
+    layout: "/admin"
+  },
+  {
+    path: "/invoice/:invoice",
+    component: Invoice,
   },
   // {
   //   path: "/typography",

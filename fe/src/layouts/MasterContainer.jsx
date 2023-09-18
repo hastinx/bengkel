@@ -10,7 +10,7 @@ const MasterContainer = ({ children, title, action, actionTItle, Menu }) => {
             <Card.Header>
               <div className='d-flex align-items-center justify-content-between'>
                 <Card.Title as="h4">{title}</Card.Title>
-                {Menu === 'Transaksi' ? "" : <Button
+                {Menu === 'Transaksi' || Menu === 'Report' ? "" : <Button
                   className="btn-fill pull-right"
                   type="submit"
                   variant="success"

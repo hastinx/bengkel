@@ -11,7 +11,7 @@ const r_cart = require('./transaksi/cartRouter')
 const r_report = require('./report/reportRouter')
 
 const r_dashboard = require('./dashboard/summaryRouter')
-
+const r_user = require('./auth/authRouter')
 
 
 
@@ -26,6 +26,7 @@ module.exports = {
         r_trx_penjualan,
         r_cart,
         r_report,
-        r_dashboard
+        r_dashboard,
+        r_user
     ]
 }

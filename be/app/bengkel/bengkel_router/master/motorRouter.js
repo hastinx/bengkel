@@ -1,6 +1,5 @@
 const { c_mst_motor } = require("../../bengkel_controllers");
 
-const { authKey } = require('../../../../middleware/authKey')
 const router = require('express').Router()
 
 router.get('/master/kendaraan', c_mst_motor.getAll)

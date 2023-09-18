@@ -7,6 +7,7 @@ const c_trx_penjualan = require('./transaksi/penjualanController')
 const c_cart = require('./transaksi/cartController')
 const c_report = require('./report/reportController')
 const c_summary_dashboard = require('./dashboard/summaryController')
+const c_user = require('./auth/authUser')
 
 module.exports = {
     c_mst_produk,
@@ -20,5 +21,6 @@ module.exports = {
     //report
     c_report,
     //dashboard
-    c_summary_dashboard
+    c_summary_dashboard,
+    c_user
 }
