@@ -20,7 +20,7 @@ import { useLocation, NavLink } from "react-router-dom";
 
 import { Nav } from "react-bootstrap";
 
-import logo from "assets/img/reactlogo.png";
+import logo from "assets/img/wrench.svg";
 
 function Sidebar({ color, image, routes }) {
   const location = useLocation();
@@ -38,15 +38,15 @@ function Sidebar({ color, image, routes }) {
       <div className="sidebar-wrapper">
         <div className="logo d-flex align-items-center justify-content-start">
           <a
-            href="https://www.creative-tim.com?ref=lbd-sidebar"
+            href="#0"
             className="simple-text logo-mini mx-1"
           >
             <div className="logo-img">
-              <img src={require("assets/img/reactlogo.png")} alt="..." />
+              <img src={logo} alt="..." />
             </div>
           </a>
-          <span className="fs-bold">
-            BENGKEL
+          <span className="fw-bold">
+            FAHMI MOTOR
           </span>
 
 

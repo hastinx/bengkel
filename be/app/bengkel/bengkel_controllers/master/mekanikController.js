@@ -42,6 +42,11 @@ module.exports = {
 
     add: async (req, res) => {
         let { nama, email, hp, umur, alamat, keahlian } = req.body
+
+        if (nama === '' || nama === undefined) return res.status(400).json({ message: 'Nama harus di isi' })
+        if (hp === '' || hp === undefined) return res.status(400).json({ message: 'No.Hp harus di isi' })
+        if (keahlian === '' || keahlian === undefined) return res.status(400).json({ message: 'Keahlian harus di isi' })
+
         nama == undefined ? nama = "" : nama = nama
         email == undefined ? email = "" : email = email
         hp == undefined ? hp = "" : hp = hp
@@ -68,12 +73,12 @@ module.exports = {
                 createdAt)
              VALUES 
                 (
-                '${nama}',
+                '${nama.toUpperCase()}',
                 '${email}',
                 '${hp}',
                 ${umur},
-                '${alamat}',
-                '${keahlian}',
+                '${alamat.toUpperCase()}',
+                '${keahlian.toUpperCase()}',
                 0,
                 now()
                 )`
@@ -90,11 +95,11 @@ module.exports = {
         const id = req.params.id
         const { nama, email, hp, alamat, keahlian } = req.body
         try {
-            await promise.query(`UPDATE bkl_mst_mekanik SET nama='${nama}', 
+            await promise.query(`UPDATE bkl_mst_mekanik SET nama='${nama.toUpperCase()}', 
                 email='${email}',
                 hp=${hp},
-                alamat='${alamat}',
-                keahlian='${keahlian}',
+                alamat='${alamat.toUpperCase()}',
+                keahlian='${keahlian.toUpperCase()}',
                 createdAt=NOW() AND updatedAt=now() WHERE id=${id}`)
 
             return res.json({
@@ -118,5 +123,17 @@ module.exports = {
             status: 200,
             message: "Data karyawan berhasil dihapus"
         })
+    },
+
+    getMekanikOnlyList: async (req, res) => {
+        try {
+            const [data] = await promise.query(`SELECT * FROM bkl_mst_mekanik WHERE keahlian='mekanik'`)
+
+            res.status(200).json({ status: 200, values: data })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ status: 'failed' })
+        }
     }
+
 }

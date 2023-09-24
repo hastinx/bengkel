@@ -25,7 +25,7 @@ import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 
 import routes from "routes.js";
 
-import sidebarImage from "assets/img/sidebar-3.jpg";
+import sidebarImage from "assets/img/sidebar-5.jpg";
 import { getAuthentication } from "helper/api";
 
 function Admin() {

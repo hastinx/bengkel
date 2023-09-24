@@ -46,11 +46,11 @@ export const TablePenjualan = ({ Data, Header, Field, Menu, Action }) => {
 
                                     <td className='border-1'>
                                         <>
-                                            {el.statusPembayaran === 'lunas' ? '' : <OverlayTrigger
+                                            {el.status_pembayaran === 'lunas' ? '' : <OverlayTrigger
                                                 overlay={<Tooltip id="tooltip-488980961">Bayar</Tooltip>}
                                             >
                                                 <Button
-                                                    className="btn-simple btn-fill px-2 me-1"
+                                                    className="btn-simple btn-fill px-2 me-1 mb-1"
                                                     type="button"
                                                     variant="success"
                                                     id={el.code}
@@ -59,18 +59,31 @@ export const TablePenjualan = ({ Data, Header, Field, Menu, Action }) => {
                                                     Bayar
                                                 </Button>
                                             </OverlayTrigger>}
-
+                                            <br />
                                             <OverlayTrigger
                                                 overlay={<Tooltip id="tooltip-506045838">Retur</Tooltip>}
                                             >
                                                 <Button
-                                                    className="btn-simple btn-fill px-2"
+                                                    className="btn-simple btn-fill px-2 me-1 mb-1"
                                                     type="button"
                                                     variant="danger"
                                                     id={el.code}
                                                     onClick={Action[1]}
                                                 >
                                                     Retur
+                                                </Button>
+                                            </OverlayTrigger> <br />
+                                            <OverlayTrigger
+                                                overlay={<Tooltip id="tooltip-506045838">Print</Tooltip>}
+                                            >
+                                                <Button
+                                                    className="btn-simple btn-fill px-2 me-1 mb-1"
+                                                    type="button"
+                                                    variant="primary"
+                                                    id={el.code}
+                                                    onClick={Action[3]}
+                                                >
+                                                    Print
                                                 </Button>
                                             </OverlayTrigger></>
 
@@ -161,9 +174,9 @@ export const TableRetur = ({ Data, Header, Field, Menu, Action }) => {
                                             onClick={Action[0]}
                                         >
                                             {el[i]}
-                                        </Button></td>) : i === 'harga' || i === 'harga_modal' || i === 'harga_jual' || i === 'ongkos' || i === 'hargaSatuan' || i === 'totalHarga' || i === 'debet' || i === 'kredit' || i === 'piutang' ? (
+                                        </Button></td>) : i === 'harga' || i === 'harga_modal' || i === 'harga_jual' || i === 'ongkos' || i === 'harga_satuan' || i === 'total_harga' || i === 'debet' || i === 'kredit' || i === 'piutang' ? (
                                             <td key={i} className='text-end border-1'>{formatRupiah(el[i])}</td>
-                                        ) : i === 'qty' ? <td className='border-1' key={i}><input type='number' defaultValue='0' onChange={(e) => setQty(e.target.value)} /> &nbsp; {el[i]}</td> :
+                                        ) : i === 'stok_terjual' ? <td className='border-1' key={i}><input type='number' defaultValue='0' onChange={(e) => setQty(e.target.value)} /> &nbsp; {el[i]}</td> :
                                             <td className='border-1' key={i}>{el[i]}</td>
 
                                     )}
@@ -178,7 +191,7 @@ export const TableRetur = ({ Data, Header, Field, Menu, Action }) => {
                                                     type="button"
                                                     variant="danger"
                                                     id={el.code}
-                                                    onClick={() => insertRetur(el.codeTransaksi, el.kodeProduk, qty, el.hargaSatuan)}
+                                                    onClick={() => insertRetur(el.kode_transaksi, el.kode_produk, qty, el.harga_satuan)}
                                                 >
                                                     Retur
                                                 </Button>

@@ -9,6 +9,7 @@ import {
     Button
 } from "react-bootstrap";
 import { useHistory } from 'react-router-dom';
+import logo from '../../assets/img/wrench.svg';
 
 const Register = () => {
     let history = useHistory()
@@ -17,6 +18,21 @@ const Register = () => {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [msg, setMsg] = useState('')
+    const [validated, setValidated] = useState(false);
+
+    const handleSubmit = (event) => {
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        setValidated(true);
+        if (form.checkValidity() === true) {
+            event.preventDefault();
+            handleRegister()
+        }
+    };
 
     const handleRegister = async () => {
         try {
@@ -39,64 +55,82 @@ const Register = () => {
         <>
             <Container fluid className='d-flex justify-content-center align-items-center bg-light vw-100 vh-100'>
                 <Card className="p-3">
-                    <Card.Header className='text-center'>Bengkel - Register <br /><span className='text-danger'>{msg}</span></Card.Header>
+                    <Card.Header className='text-center'><img src={logo} alt='' className='avatar border-gray' /> {" "}Bengkel - Register <br /><span className='text-danger'>{msg}</span></Card.Header>
                     <Card.Body>
-                        <Row className='mt-2'>
-                            <Col md="4"><label className='text-dark'>Nama</label></Col>
-                            <Col className="pr-1" md="8">
-                                <Form.Group>
-                                    <Form.Control
-                                        placeholder="Nama"
-                                        type="text"
-                                        onChange={(e) => setNama(e.target.value)}
-                                    ></Form.Control>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row className='mt-2'>
-                            <Col md="4"><label className='text-dark'>Email</label></Col>
-                            <Col className="pr-1" md="8">
-                                <Form.Group>
-                                    <Form.Control
-                                        placeholder="Email"
-                                        type="text"
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    ></Form.Control>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row className='mt-2'>
-                            <Col md="4"><label className='text-dark'>Password</label></Col>
-                            <Col className="pr-1" md="8">
-                                <Form.Group>
-                                    <Form.Control
-                                        placeholder="Password"
-                                        type="text"
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    ></Form.Control>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row className='mt-2'>
-                            <Col md="4"><label className='text-dark'>Confirm Password</label></Col>
-                            <Col className="pr-1" md="8">
-                                <Form.Group>
-                                    <Form.Control
-                                        placeholder="Confirm Password"
-                                        type="text"
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                    ></Form.Control>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                        <Row className='mt-2'>
+                        <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                            <Row className='mt-2'>
+                                <Col md="4"><label className='text-dark'>Nama</label></Col>
+                                <Col className="pr-1" md="8">
+                                    <Form.Group>
+                                        <Form.Control
+                                            required
+                                            placeholder="Nama"
+                                            type="text"
+                                            onChange={(e) => setNama(e.target.value)}
+                                        ></Form.Control>
+                                        <Form.Control.Feedback type="invalid">
+                                            nama harus di isi
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row className='mt-2'>
+                                <Col md="4"><label className='text-dark'>Email</label></Col>
+                                <Col className="pr-1" md="8">
+                                    <Form.Group>
+                                        <Form.Control
+                                            required
+                                            placeholder="Email"
+                                            type="text"
+                                            onChange={(e) => setEmail(e.target.value)}
+                                        ></Form.Control>
+                                        <Form.Control.Feedback type="invalid">
+                                            email harus di isi
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row className='mt-2'>
+                                <Col md="4"><label className='text-dark'>Password</label></Col>
+                                <Col className="pr-1" md="8">
+                                    <Form.Group>
+                                        <Form.Control
+                                            required
+                                            placeholder="Password"
+                                            type="password"
+                                            onChange={(e) => setPassword(e.target.value)}
+                                        ></Form.Control>
+                                        <Form.Control.Feedback type="invalid">
+                                            password harus di isi
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row className='mt-2'>
+                                <Col md="4"><label className='text-dark'>Confirm Password</label></Col>
+                                <Col className="pr-1" md="8">
+                                    <Form.Group>
+                                        <Form.Control
+                                            required
+                                            placeholder="Confirm Password"
+                                            type="password"
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                        ></Form.Control>
+                                        <Form.Control.Feedback type="invalid">
+                                            Confirm Password harus di isi
+                                        </Form.Control.Feedback>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row className='mt-2'>
 
-                            <Col className="pr-1 " sm='12' md="12" lg='12'>
+                                <Col className="pr-1 " sm='12' md="12" lg='12'>
 
-                                <Button className="btn btn-sm btn-success btn-fill float-end" type="button" onClick={() => handleRegister()}>Register</Button>
-                                <Button className="btn btn-sm btn-neutral btn-fill float-end me-2" type="button" onClick={() => toLoginPage()}>Login</Button>
-                            </Col>
-                        </Row>
+                                    <Button className="btn btn-sm btn-success btn-fill float-end" type="submit">Register</Button>
+                                    <Button className="btn btn-sm btn-neutral btn-fill float-end me-2" type="button" onClick={() => toLoginPage()}>Login</Button>
+                                </Col>
+                            </Row>
+                        </Form>
                     </Card.Body>
 
                 </Card>

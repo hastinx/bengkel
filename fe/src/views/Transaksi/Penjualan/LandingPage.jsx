@@ -31,6 +31,7 @@ const status = [
     { value: 'belum lunas', label: 'belum lunas' },
 ];
 var arrMekanik = [];
+var optionMekanik = [];
 
 const LandingPage = () => {
 
@@ -57,16 +58,35 @@ const LandingPage = () => {
     const [invoiceHeader, setInvoiceHeader] = useState([])
     const [invoiceMekanik, setInvoiceMekanik] = useState([])
     const [invoiceProduk, setInvoiceProduk] = useState([])
-    const componentRef = useRef()
+    const [mekanik, setMekanik] = useState([])
+    const componentRef = useRef(), optionMekanik1 = useRef(), optionMekanik2 = useRef(), optionMekanik3 = useRef(), optionProduk = useRef(), optionType = useRef(), optionJenis = useRef()
+
+
+
     const getOptionSpareParts = async () => {
         try {
             const result = await getApi('master/produk')
             result.map(i =>
                 options.push({
-                    value: i.id + ">" + i.kode + ">" + i.nama + ">" + i.qty + ">" + i.harga_jual,
+                    value: i.id + ">" + i.kode + ">" + i.nama + ">" + i.stok_sisa + ">" + i.harga_jual,
                     label: i.nama
                 })
             )
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const getOptionMekanik = async () => {
+        try {
+            const result = await getApi('master/mekanik')
+            console.log(result)
+            result.map(i => {
+                optionMekanik.push({
+                    value: i.nama,
+                    label: i.nama
+                })
+            })
         } catch (error) {
             console.log(error)
         }
@@ -97,7 +117,7 @@ const LandingPage = () => {
             let total = 0
             const result = await getApi('cart')
             setCart(result)
-            result.map(i => total += (i.qty * i.hargaSatuan))
+            result.map(i => total += (i.stok_terjual * i.harga_satuan))
             setTotalPrica(total)
             console.log(totalPrica)
         } catch (error) {
@@ -153,7 +173,7 @@ const LandingPage = () => {
                 totalBayar: totalPrica + ongkosMekanik
             })
 
-            // Swal.fire(result.data.message)
+            Swal.fire(result.data.message)
 
             document.getElementById("customer").value = ""
             document.getElementById("noHp").value = ""
@@ -162,18 +182,21 @@ const LandingPage = () => {
             document.getElementById("noPlat").value = ""
             document.getElementById("kmMasuk").value = ""
             document.getElementById("kmKeluar").value = ""
-            document.getElementById("1").value = ""
             document.getElementById("ongkos1").value = ""
-            document.getElementById("2").value = ""
             document.getElementById("ongkos2").value = ""
-            document.getElementById("3").value = ""
             document.getElementById("ongkos3").value = ""
+            optionMekanik1.current.clearValue();
+            optionMekanik2.current.clearValue();
+            optionMekanik3.current.clearValue();
+            optionProduk.current.clearValue();
+            optionJenis.current.clearValue();
+            optionType.current.clearValue();
             setCart([])
+            setTotalPrica(0)
+            setOngkosMekanik(0)
             setMekanik1({})
             setMekanik2({})
             setMekanik3({})
-            setTotalPrica(0)
-            setOngkosMekanik(0)
             setCustomer()
             setNoHp()
             setAlamat()
@@ -231,6 +254,7 @@ const LandingPage = () => {
 
     useEffect(() => {
         getOptionSpareParts()
+        getOptionMekanik()
         getCart()
     }, [])
 
@@ -376,14 +400,12 @@ const LandingPage = () => {
                                                 <Col className="pr-1" md="6">
                                                     <Form.Group>
                                                         <label className='fw-bold text-dark'>MEKANIK 1</label>
-                                                        <Form.Control
-                                                            // defaultValue="Creative Code Inc."
-                                                            className='text-uppercase'
-                                                            id="1"
-                                                            placeholder="MEKANIK 1"
-                                                            type="text"
-                                                            onChange={(e) => setMekanik1(state => ({ ...state, mekanik: e.target.value, no: Number(e.target.id) }))}
-                                                        ></Form.Control>
+                                                        <Select
+                                                            ref={optionMekanik1}
+                                                            isClearable={true}
+                                                            onChange={(e) => e !== null ? setMekanik1(state => ({ ...state, mekanik: e.value, no: 1 })) : setMekanik1(state => ({ ...state, mekanik: '', no: 1 }))}
+                                                            options={optionMekanik}
+                                                        />
                                                     </Form.Group>
                                                 </Col>
                                                 <Col className="pr-1" md="6">
@@ -405,14 +427,12 @@ const LandingPage = () => {
                                                 <Col className="pr-1" md="6">
                                                     <Form.Group>
                                                         <label className='fw-bold text-dark'>MEKANIK 2</label>
-                                                        <Form.Control
-                                                            // defaultValue="Creative Code Inc."
-                                                            className='text-uppercase'
-                                                            id="2"
-                                                            placeholder="MEKANIK 2"
-                                                            type="text"
-                                                            onChange={(e) => setMekanik2(state => ({ ...state, mekanik: e.target.value, no: Number(e.target.id) }))}
-                                                        ></Form.Control>
+                                                        <Select
+                                                            ref={optionMekanik2}
+                                                            isClearable={true}
+                                                            onChange={(e) => e !== null ? setMekanik2(state => ({ ...state, mekanik: e.value, no: 2 })) : setMekanik2(state => ({ ...state, mekanik: '', no: 2 }))}
+                                                            options={optionMekanik}
+                                                        />
                                                     </Form.Group>
                                                 </Col>
                                                 <Col className="pr-1" md="6">
@@ -434,14 +454,12 @@ const LandingPage = () => {
                                                 <Col className="pr-1" md="6">
                                                     <Form.Group>
                                                         <label className='fw-bold text-dark'>MEKANIK 3</label>
-                                                        <Form.Control
-                                                            // defaultValue="Creative Code Inc."
-                                                            className='text-uppercase'
-                                                            id="3"
-                                                            placeholder="MEKANIK 3"
-                                                            type="text"
-                                                            onChange={(e) => setMekanik3(state => ({ ...state, mekanik: e.target.value, no: Number(e.target.id) }))}
-                                                        ></Form.Control>
+                                                        <Select
+                                                            ref={optionMekanik3}
+                                                            isClearable={true}
+                                                            onChange={(e) => e !== null ? setMekanik3(state => ({ ...state, mekanik: e.value, no: 3 })) : setMekanik3(state => ({ ...state, mekanik: '', no: 3 }))}
+                                                            options={optionMekanik}
+                                                        />
                                                     </Form.Group>
                                                 </Col>
                                                 <Col className="pr-1" md="6">
@@ -488,6 +506,7 @@ const LandingPage = () => {
                                                     <Form.Group>
                                                         <label className='fw-bold text-dark'>TIPE TRANSAKSI</label>
                                                         <Select
+                                                            ref={optionType}
                                                             defaultValue={selectedTipe}
                                                             isClearable={true}
                                                             onChange={setSelectedTipe}
@@ -499,6 +518,7 @@ const LandingPage = () => {
                                                     <Form.Group>
                                                         <label className='fw-bold text-dark'>STATUS PEMBAYARAN</label>
                                                         <Select
+                                                            ref={optionJenis}
                                                             defaultValue={selectedStatus}
                                                             isClearable={true}
                                                             onChange={setSelectedStatus}
@@ -525,6 +545,7 @@ const LandingPage = () => {
                                                     <Form.Group>
                                                         <label className='fw-bold text-dark'>SPARE PART</label>
                                                         <Select
+                                                            ref={optionProduk}
                                                             defaultValue={selectedOption}
                                                             isClearable={true}
                                                             onChange={setSelectedOption}
@@ -558,9 +579,9 @@ const LandingPage = () => {
                                                 {cart.length > 0 ? cart.map(i =>
                                                     <tr key={i.id}>
                                                         <td>{i.nama}</td>
-                                                        <td>{i.hargaSatuan}</td>
-                                                        <td><input type='number' defaultValue={i.qty} onChange={(e) => addToCart(i.hargaSatuan, i.kodeProduk, e.target.value)} /></td>
-                                                        <td>{formatRupiah(Number(i.qty * i.hargaSatuan))}</td>
+                                                        <td>{i.harga_satuan}</td>
+                                                        <td><input type='number' defaultValue={i.stok_terjual} onChange={(e) => addToCart(i.harga_satuan, i.kode_produk, e.target.value)} /></td>
+                                                        <td>{formatRupiah(Number(i.stok_terjual * i.harga_satuan))}</td>
                                                     </tr>) : ""}
 
                                             </tbody>
@@ -615,52 +636,52 @@ const LandingPage = () => {
                     <div ref={componentRef} style={{ width: '100%', height: window.innerHeight }}>
 
                         <header style={{ marginLeft: '10px' }}>
-                            <h2>BENGKEL ABC</h2>
+                            <h2>BENGKEL FAHMI MOTOR</h2>
                         </header>
                         <section style={{ marginLeft: '10px', marginRight: '10px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div style={{ display: 'block' }}>
                                     <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>Nama Customer</div>
-                                        <div style={{ fontFamily: 'Arial' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].customer}</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Nama Customer</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].customer}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>No.HP</div>
-                                        <div style={{ fontFamily: 'Arial' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].noHp}</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>No.HP</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].noHp}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>Alamat</div>
-                                        <div style={{ fontFamily: 'Arial' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].alamat}</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Alamat</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].alamat}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>Kendaraan</div>
-                                        <div style={{ fontFamily: 'Arial' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].kendaraan}</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Kendaraan</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].kendaraan}</div>
                                     </div>
                                 </div>
                                 <div className='col-md-6'>
                                     <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>No.Plat</div>
-                                        <div style={{ fontFamily: 'Arial' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', textTransform: 'uppercase' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].noPlat}</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>No.Plat</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', textTransform: 'uppercase' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].no_plat}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>KM Mobil</div>
-                                        <div style={{ fontFamily: 'Arial' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].kmMasuk + " - " + invoiceHeader[0].kmKeluar}</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>KM Mobil</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].km_masuk + " - " + invoiceHeader[0].km_keluar}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>Tipe Transaksi</div>
-                                        <div style={{ fontFamily: 'Arial' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].tipeTransaksi}</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Tipe Transaksi</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].tipe_transaksi}</div>
                                     </div>
                                     <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>Status</div>
-                                        <div style={{ fontFamily: 'Arial' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].statusPembayaran}</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Status</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].status_pembayaran}</div>
                                     </div>
                                 </div>
                             </div>
@@ -669,49 +690,49 @@ const LandingPage = () => {
                                 <table style={{ width: '100%', border: '1px solid #000', borderCollapse: 'collapse' }}>
                                     <thead style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
                                         <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <th style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
                                                 Spare Part
                                             </th>
-                                            <th style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
                                                 Qty
                                             </th>
-                                            <th style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
                                                 Harga Satuan
                                             </th>
-                                            <th style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
                                                 Harga Total
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
                                         {invoiceProduk.length === 0 ? <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
                                         </tr> :
                                             invoiceProduk.map(i =>
                                                 <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                                    <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>
+                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>
                                                         {i.nama}
                                                     </td>
-                                                    <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', textAlign: 'center', fontFamily: 'Arial' }}>
+                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'center', fontFamily: 'Arial' }}>
                                                         {i.qty}
                                                     </td>
-                                                    <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
                                                         {formatRupiah(i.hargaSatuan)}
                                                     </td>
-                                                    <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
                                                         {formatRupiah(i.totalHarga)}
                                                     </td>
                                                 </tr>
                                             )
                                         }
                                         <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <td colSpan={3} style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', fontWeight: 'bolder' }}>
+                                            <td colSpan={3} style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', fontWeight: 'bolder' }}>
                                                 Total
                                             </td>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
                                                 {formatRupiah(totalPrica)}
                                             </td>
                                         </tr>
@@ -720,25 +741,25 @@ const LandingPage = () => {
                                 <table style={{ width: '100%', border: '1px solid #000', borderCollapse: 'collapse', marginTop: '2px' }}>
                                     <thead style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
                                         <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <th style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
                                                 Mekanik
                                             </th>
-                                            <th style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
                                                 Ongkos
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
                                         {invoiceMekanik.length === 0 ? <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
                                         </tr> :
                                             invoiceMekanik.map(i =>
                                                 <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                                    <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>
+                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>
                                                         {i.mekanik}
                                                     </td>
-                                                    <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
                                                         {formatRupiah(i.ongkos)}
                                                     </td>
                                                 </tr>
@@ -746,37 +767,33 @@ const LandingPage = () => {
 
                                         }
                                         <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', fontWeight: 'bolder' }}>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', fontWeight: 'bolder' }}>
                                                 Total Ongkos
                                             </td>
-                                            <td style={{ border: '1px solid #000', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
                                                 {formatRupiah(ongkosMekanik)}
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                                 <hr />
-                                <div style={{ display: 'flex', justifyContent: 'end' }}><span style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>TOTAL : {formatRupiah(totalPrica + ongkosMekanik)}</span> </div>
+                                <div style={{ display: 'flex', justifyContent: 'end' }}><span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>TOTAL : {formatRupiah(totalPrica + ongkosMekanik)}</span> </div>
                                 <hr />
 
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <div>
-                                        <span style={{ fontFamily: 'Arial' }}>Diterima</span>
+                                        <span style={{ fontFamily: 'Arial', fontSize: '11px' }}>Diterima</span>
                                         <br />
                                         <br />
                                         <br />
-                                        <br />
-                                        <br />
-                                        <span style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].customer}</span>
+                                        <span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].customer}</span>
                                     </div>
                                     <div>
-                                        <span style={{ fontFamily: 'Arial' }}>Tgl, {moment().format('DD/MM/YYYY hh:mm')}</span>
+                                        <span style={{ fontFamily: 'Arial', fontSize: '11px' }}>Tgl, {moment().format('DD/MM/YYYY hh:mm')}</span>
                                         <br />
                                         <br />
                                         <br />
-                                        <br />
-                                        <br />
-                                        <span style={{ fontFamily: 'Arial', fontWeight: 'bolder' }}>...................................</span>
+                                        <span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>...................................</span>
                                     </div>
                                 </div>
                             </div>

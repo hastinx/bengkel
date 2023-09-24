@@ -81,18 +81,18 @@ const ModalForm = ({ showModal, Action, SetState, State, Type }) => {
             </Modal.Body>
             <div className="modal-footer">
                 <Button
-                    className="btn-simple"
+                    className="btn btn-danger btn-fill"
                     type="button"
-                    variant="link"
+                    variant="solid"
                     onClick={Action[0]}
                 >
                     Kembali
                 </Button>
                 <Button
-                    className="btn btn-success"
+                    className="btn btn-success btn-fill"
                     type="button"
                     variant="solid"
-                    onClick={Type = "edit" ? Action[2] : Action[1]}
+                    onClick={Type === "edit" ? Action[2] : Action[1]}
                 >
                     Simpan
                 </Button>

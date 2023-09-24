@@ -15,12 +15,14 @@ import {
     Stack,
     Modal,
     Form,
+    Spinner,
 } from "react-bootstrap";
 import { getApi } from 'helper/api';
 import ModalForm from './ModalForm';
 import MasterContainer from 'layouts/MasterContainer';
 import axios from 'axios'
 import Swal from 'sweetalert2';
+import moment from 'moment';
 
 const LandingPage = () => {
     const [showModal, setShowModal] = useState(false)
@@ -32,10 +34,13 @@ const LandingPage = () => {
     const [jumlah, setJumlah] = useState("");
     const [eId, setId] = useState(0);
     const [type, setType] = useState("");
+    const [loading, setLoading] = useState(false)
 
     const getList = async () => {
+        setLoading(true)
         const data = await getApi('master/produk');
         setProduk(data);
+        setLoading(false)
     };
 
     const addSparePart = async () => {
@@ -45,7 +50,9 @@ const LandingPage = () => {
                 kode: kode,
                 harga_modal: harga_modal,
                 harga_jual: harga_jual,
-                qty: jumlah
+                stok_input: jumlah,
+                createdAt: moment().format('YYYY-MM'),
+                createdBefore: moment().add(-1).format('YYYY-MM'),
             })
             Swal.fire(res.data.message)
             getList()
@@ -85,7 +92,7 @@ const LandingPage = () => {
                 kode: kode,
                 harga_modal: harga_modal,
                 harga_jual: harga_jual,
-                qty: jumlah
+                qty: jumlah,
             })
 
             Swal.fire(res.data.message)
@@ -102,7 +109,8 @@ const LandingPage = () => {
     return (
         <>
             <MasterContainer title='Master Spare Part' action={() => setShowModal(true)} actionTItle=' Tambah Spare Part'>
-                <TableData Data={produk} Header={['Nama', 'Kode', 'Stok', 'Harga Modal', 'Harga Jual']} Field={['nama', 'kode', 'qty', 'harga_modal', 'harga_jual']} Menu='Master Spare Part' Action={[(e) => getEditData(e.target.id), (e) => handleDelete(e.target.id)]} />
+                {loading ? <Spinner /> : <TableData Data={produk} Header={['Periode', 'Nama', 'Kode', 'Stok Input', 'Stok', 'Terjual', 'Sisa', 'Harga Modal', 'Harga Jual']} Field={['createdAt', 'nama', 'kode', 'stok_input', 'stok', 'stok_terjual', 'stok_sisa', 'harga_modal', 'harga_jual']} Menu='Master Spare Part' Action={[(e) => getEditData(e.target.id), (e) => handleDelete(e.target.id)]} />}
+
             </MasterContainer>
             <ModalForm
                 showModal={showModal}

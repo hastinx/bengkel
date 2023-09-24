@@ -25,11 +25,11 @@ module.exports = {
                         noHp, 
                         alamat, 
                         kendaraan, 
-                        noPlat, 
-                        kmMasuk, 
-                        kmKeluar, 
-                        tipeTransaksi, 
-                        statusPembayaran, 
+                        no_plat, 
+                        km_masuk, 
+                        km_keluar, 
+                        tipe_transaksi, 
+                        status_pembayaran, 
                         createdBy)
                         VALUES (
                         '${code}',
@@ -55,14 +55,14 @@ module.exports = {
                 },
                 function (cb) {
                     async.eachSeries(mekanik, function iteratee(item, cb1) {
-                        promise.query(`INSERT INTO bkl_transaction_mekanik (codeTransaksi,mekanik,ongkos) VALUES ('${code}','${item.mekanik}',${item.ongkos})`)
+                        promise.query(`INSERT INTO bkl_transaction_mekanik (kode_transaksi,mekanik,ongkos) VALUES ('${code}','${item.mekanik}',${item.ongkos})`)
                         cb1()
                     })
                     cb(null, 'insert transaction mekanik')
                 },
                 function (cb) {
                     async.eachSeries(produk, function iteratee(item, cb1) {
-                        promise.query(`INSERT INTO bkl_transaction_produk (codeTransaksi,kodeProduk,qty,hargaSatuan,totalHarga) VALUES ('${code}','${item.kodeProduk}',${item.qty},${item.hargaSatuan},${Number(item.qty * item.hargaSatuan)})`)
+                        promise.query(`INSERT INTO bkl_transaction_produk (kode_transaksi,kode_produk,stok_terjual,harga_satuan,total_harga) VALUES ('${code}','${item.kode_produk}',${item.stok_terjual},${item.harga_satuan},${Number(item.stok_terjual * item.harga_satuan)})`)
                         cb1()
                     })
                     cb(null, 'insert transaction produk')
@@ -83,11 +83,13 @@ module.exports = {
                 console.log(produk)
                 async function updateStock() {
                     for (let i = 0; i < produk.length; i++) {
-                        let stock = 0
-                        let [result] = await promise.query(`SELECT * FROM bkl_mst_produk WHERE kode='${produk[i].kodeProduk}'`)
+                        let stock_terjual = 0
+                        let stock_sisa = 0
+                        let [result] = await promise.query(`SELECT * FROM bkl_mst_produk WHERE kode='${produk[i].kode_produk}'`)
                         console.log(result)
-                        stock = Number(result[0].qty) - Number(produk[i].qty)
-                        await promise.query(`UPDATE bkl_mst_produk SET qty=${stock} WHERE kode='${produk[i].kodeProduk}'`)
+                        stock_terjual = Number(result[0].stok_terjual) + Number(produk[i].stok_terjual)
+                        stock_sisa = Number(result[0].stok_sisa) - Number(produk[i].stok_terjual)
+                        await promise.query(`UPDATE bkl_mst_produk SET stok_terjual=${stock_terjual},stok_sisa=${stock_sisa} WHERE kode='${produk[i].kode_produk}'`)
                     }
                 }
 
@@ -120,7 +122,7 @@ module.exports = {
     },
     getMekanikByKode: async (req, res) => {
         try {
-            const [result] = await promise.query(`SELECT * FROM bkl_transaction_mekanik WHERE codeTransaksi='${req.params.kode}'`)
+            const [result] = await promise.query(`SELECT * FROM bkl_transaction_mekanik WHERE kode_transaksi='${req.params.kode}'`)
 
             res.status(200).json({ values: result })
         } catch (error) {
@@ -129,7 +131,7 @@ module.exports = {
     },
     getProdukByKode: async (req, res) => {
         try {
-            const [result] = await promise.query(`SELECT tpr.*,mpr.nama FROM bkl_transaction_produk tpr JOIN bkl_mst_produk mpr ON tpr.kodeProduk=mpr.kode WHERE tpr.codeTransaksi='${req.params.kode}' AND tpr.qty <> 0`)
+            const [result] = await promise.query(`SELECT tpr.*,mpr.nama FROM bkl_transaction_produk tpr JOIN bkl_mst_produk mpr ON tpr.kode_produk=mpr.kode WHERE tpr.kode_transaksi='${req.params.kode}' AND tpr.stok_terjual <> 0`)
 
             res.status(200).json({ values: result })
         } catch (error) {
@@ -140,8 +142,8 @@ module.exports = {
         try {
             const inv = req.params.invoice
             const [transaksi] = await promise.query(`SELECT * FROM bkl_transaction WHERE code='${inv}'`)
-            const [mekanik] = await promise.query(`SELECT * FROM bkl_transaction_mekanik WHERE codeTransaksi='${inv}'`)
-            const [produk] = await promise.query(`SELECT btp.qty as qty,btp.totalHarga as totalHarga, btp.hargaSatuan as hargaSatuan, btp.kodeProduk as kode, bmp.nama as nama FROM bkl_transaction_produk btp JOIN bkl_mst_produk bmp ON btp.kodeProduk= bmp.kode WHERE btp.codeTransaksi='${inv}' AND btp.qty > 0`)
+            const [mekanik] = await promise.query(`SELECT * FROM bkl_transaction_mekanik WHERE kode_transaksi='${inv}'`)
+            const [produk] = await promise.query(`SELECT btp.stok_terjual as qty,btp.total_harga as totalHarga, btp.harga_satuan as hargaSatuan, btp.kode_produk as kode, bmp.nama as nama FROM bkl_transaction_produk btp JOIN bkl_mst_produk bmp ON btp.kode_produk= bmp.kode WHERE btp.kode_transaksi='${inv}' AND btp.stok_terjual > 0`)
 
             const data = {
                 transaksi,
@@ -160,7 +162,7 @@ module.exports = {
             var arrProduk = []
             var arrSpare = []
             async function getProduk(invoice, kodeProduk) {
-                const [produk] = await promise.query(`SELECT * FROM bkl_transaction_produk WHERE codeTransaksi='${invoice}' AND kodeProduk='${kodeProduk}'`)
+                const [produk] = await promise.query(`SELECT * FROM bkl_transaction_produk WHERE kode_transaksi='${invoice}' AND kode_produk='${kodeProduk}'`)
                 console.log(produk)
                 arrProduk = produk
             }
@@ -177,12 +179,13 @@ module.exports = {
                 getProduk(item.invoice, item.kodeProduk)
                 getSparePart(item.kodeProduk)
                 setTimeout(() => {
-                    let newQty = Number(arrProduk[0].qty) - Number(item.qty)
-                    let newTotalHarga = Number(newQty) * Number(arrProduk[0].hargaSatuan)
-                    promise.query(`UPDATE bkl_transaction_produk SET qty=${newQty},totalHarga=${newTotalHarga} WHERE codeTransaksi='${item.invoice}' AND kodeProduk='${item.kodeProduk}'`)
+                    let stok_terjual = Number(arrProduk[0].stok_terjual) - Number(item.qty)
+                    let stok_sisa = Number(arrSpare[0].stok_sisa) + Number(item.qty)
+                    let newTotalHarga = Number(stok_terjual) * Number(arrProduk[0].harga_satuan)
+                    promise.query(`UPDATE bkl_transaction_produk SET stok_terjual=${stok_terjual},total_harga=${newTotalHarga} WHERE kode_transaksi='${item.invoice}' AND kode_produk='${item.kodeProduk}'`)
                     let newQtyPart = Number(arrSpare[0].qty) + Number(item.qty)
-                    promise.query(`UPDATE bkl_mst_produk SET qty=${newQtyPart} WHERE kode='${item.kodeProduk}'`)
-                    promise.query(`INSERT INTO bkl_balance (deskripsi,status,kredit,log_act,log_createdBy) VALUES ('${item.invoice}','retur',${Number(item.qty) * Number(arrProduk[0].hargaSatuan)},'Transaksi keluar retur ${item.kodeProduk}, qty ${item.qty} pcs','system')`)
+                    promise.query(`UPDATE bkl_mst_produk SET stok_terjual=${stok_terjual},stok_sisa=${stok_sisa} WHERE kode='${item.kodeProduk}'`)
+                    promise.query(`INSERT INTO bkl_balance (deskripsi,status,kredit,log_act,log_createdBy) VALUES ('${item.invoice}','retur',${Number(item.qty) * Number(arrProduk[0].harga_satuan)},'Transaksi keluar retur ${item.kodeProduk}, qty ${item.qty} pcs','system')`)
                     cb1()
                 }, 1000)
 
@@ -208,13 +211,13 @@ module.exports = {
         var spare_part = 0
         try {
             const [transaction] = await promise.query(`SELECT * FROM bkl_transaction WHERE code='${id}'`)
-            const [mekanik] = await promise.query(`SELECT * FROM bkl_transaction_mekanik WHERE codeTransaksi='${id}'`)
-            const [produk] = await promise.query(`SELECT * FROM bkl_transaction_produk WHERE codeTransaksi='${id}'`)
+            const [mekanik] = await promise.query(`SELECT * FROM bkl_transaction_mekanik WHERE kode_transaksi='${id}'`)
+            const [produk] = await promise.query(`SELECT * FROM bkl_transaction_produk WHERE kode_transaksi='${id}'`)
 
             mekanik.map(i => ongkos_mekanik += i.ongkos)
-            produk.map(i => spare_part += i.totalHarga)
+            produk.map(i => spare_part += i.total_harga)
 
-            promise.query(`UPDATE bkl_transaction SET statusPembayaran='lunas' WHERE code='${id}'`)
+            promise.query(`UPDATE bkl_transaction SET status_pembayaran='lunas' WHERE code='${id}'`)
             setTimeout(() => {
                 promise.query(`INSERT INTO bkl_balance (deskripsi,status,debet,log_act,log_createdBy) VALUES ('${transaction[0].code}','pelunasan hutang',${Number(ongkos_mekanik) + Number(spare_part)},'Transaksi pelunasan hutang','system')`)
             }, 500)

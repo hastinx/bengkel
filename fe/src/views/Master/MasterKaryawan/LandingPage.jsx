@@ -15,6 +15,7 @@ import {
     Stack,
     Modal,
     Form,
+    Spinner
 } from "react-bootstrap";
 import { getApi } from 'helper/api';
 import ModalForm from './ModalForm';
@@ -32,12 +33,23 @@ const LandingPage = () => {
     const [keahlian, setKeahlian] = useState("");
     const [eId, setId] = useState(0);
     const [type, setType] = useState("");
+    const [loading, setLoading] = useState(false)
 
     const getList = async () => {
+        setLoading(true)
         const data = await getApi('master/karyawan');
         console.log(data)
         setProduk(data);
+        setLoading(false)
     };
+
+    const clearField = () => {
+        setNama("")
+        setEmail("")
+        setHp("")
+        setAlamat("")
+        setKeahlian("")
+    }
 
     const addSparePart = async () => {
         try {
@@ -51,6 +63,7 @@ const LandingPage = () => {
             Swal.fire(res.data.message)
             getList()
             setShowModal(false)
+            clearField()
         } catch (error) {
             console.log(error)
             error.response ? Swal.fire(error.response.data.message) : ""
@@ -103,7 +116,8 @@ const LandingPage = () => {
     return (
         <>
             <MasterContainer title='Master Karyawan' action={() => setShowModal(true)} actionTItle=' Tambah Karyawan'>
-                <TableData Data={produk} Header={['Nama', 'Email', 'No.Hp', 'Alamat', 'Keahlian']} Field={['nama', 'email', 'hp', 'alamat', 'keahlian']} Menu='Master Karyawan' Action={[(e) => getEditData(e.target.id), (e) => handleDelete(e.target.id)]} />
+                {loading ? <Spinner animation="border" /> :
+                    <TableData Data={produk} Header={['Nama', 'Email', 'No.Hp', 'Alamat', 'Keahlian']} Field={['nama', 'email', 'hp', 'alamat', 'keahlian']} Menu='Master Karyawan' Action={[(e) => getEditData(e.target.id), (e) => handleDelete(e.target.id)]} />}
             </MasterContainer>
             <ModalForm
                 showModal={showModal}

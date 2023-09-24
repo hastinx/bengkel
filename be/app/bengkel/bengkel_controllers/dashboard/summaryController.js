@@ -4,9 +4,9 @@ const promise = db.promise()
 module.exports = {
     getSummaryProduk: async (req, res) => {
         try {
-            const [produk] = await promise.query(`SELECT COUNT(tpr.kodeProduk) as count, pr.nama FROM bkl_transaction_produk tpr
-            JOIN bkl_mst_produk pr ON tpr.kodeProduk=pr.kode
-            GROUP BY tpr.kodeProduk
+            const [produk] = await promise.query(`SELECT COUNT(tpr.kode_produk) as count, pr.nama FROM bkl_transaction_produk tpr
+            JOIN bkl_mst_produk pr ON tpr.kode_produk=pr.kode
+            GROUP BY tpr.kode_produk
             ORDER BY count DESC LIMIT 1`)
 
             res.status(200).json({ values: produk })
@@ -27,10 +27,10 @@ module.exports = {
     },
     getSummaryCash: async (req, res) => {
         try {
-            const [mekanik] = await promise.query(`SELECT tr.tipeTransaksi, SUM(tpr.totalHarga) as total FROM bkl_transaction tr
-            JOIN bkl_transaction_produk tpr ON tpr.codeTransaksi=tr.code
-            WHERE tr.tipeTransaksi='cash'
-            GROUP BY tr.tipeTransaksi
+            const [mekanik] = await promise.query(`SELECT tr.tipe_transaksi, SUM(tpr.total_harga) as total FROM bkl_transaction tr
+            JOIN bkl_transaction_produk tpr ON tpr.kode_transaksi=tr.code
+            WHERE tr.tipe_transaksi='cash'
+            GROUP BY tr.tipe_transaksi
             ORDER BY total DESC LIMIT 1`)
 
             res.status(200).json({ values: mekanik })
@@ -40,10 +40,10 @@ module.exports = {
     },
     getSummaryHutang: async (req, res) => {
         try {
-            const [mekanik] = await promise.query(`SELECT tr.tipeTransaksi, SUM(tpr.totalHarga) as total FROM bkl_transaction tr
-            JOIN bkl_transaction_produk tpr ON tpr.codeTransaksi=tr.code
-            WHERE tr.tipeTransaksi='hutang'
-            GROUP BY tr.tipeTransaksi
+            const [mekanik] = await promise.query(`SELECT tr.tipe_transaksi, SUM(tpr.total_harga) as total FROM bkl_transaction tr
+            JOIN bkl_transaction_produk tpr ON tpr.kode_transaksi=tr.code
+            WHERE tr.tipe_transaksi='hutang'
+            GROUP BY tr.tipe_transaksi
             ORDER BY total DESC LIMIT 1`)
 
             res.status(200).json({ values: mekanik })

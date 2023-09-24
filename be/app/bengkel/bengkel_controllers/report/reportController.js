@@ -96,6 +96,44 @@ module.exports = {
             console.log(error)
             res.status(500).json({ message: error })
         }
+    },
+
+    getMekanik: async (req, res) => {
+        let query = `WHERE is_deleted is null `
+        if (req.query.date !== 'undefined') {
+            query += `AND createdAt LIKE '${req.query.date}%'`
+        }
+        console.log(req.query.mekanik)
+        if (req.query.mekanik !== 'undefined') {
+            query += ` AND mekanik = '${req.query.mekanik}'`
+        }
+        try {
+            const [result] = await promise.query(`SELECT mekanik,createdAt,SUM(ongkos) as ongkos FROM bkl_transaction_mekanik ${query} GROUP BY mekanik`)
+            res.status(200).json({ values: result })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ message: error })
+        }
     }
+    ,
+
+    getProduk: async (req, res) => {
+        let query = `WHERE tpr.is_deleted is null `
+        if (req.query.date !== 'undefined') {
+            query += `AND tpr.createdAt LIKE '${req.query.date}%' AND mpr.createdAt LIKE '${req.query.date}%' `
+        }
+        console.log(req.query.produk)
+        if (req.query.produk !== 'undefined') {
+            query += ` AND mpr.nama LIKE '%${req.query.produk}%'`
+        }
+        try {
+            const [result] = await promise.query(`SELECT tpr.createdAt, mpr.nama, (mpr.harga_jual * SUM(tpr.stok_terjual)) as total_jual, (mpr.harga_modal * mpr.stok) as modal, ((mpr.harga_jual * SUM(tpr.stok_terjual)) - (mpr.harga_modal * mpr.stok)) as keuntungan FROM bkl_transaction_produk tpr JOIN bkl_mst_produk mpr ON tpr.kode_produk=mpr.kode ${query} GROUP BY tpr.kode_produk`)
+            res.status(200).json({ values: result })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ message: error })
+        }
+    }
+
 
 }

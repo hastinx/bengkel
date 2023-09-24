@@ -33,6 +33,8 @@ import ReportCash from "views/Report/ReportPenjualanCash";
 import ReportHutang from "views/Report/ReportPenjualanUtang";
 import ReportBalance from "views/Report/ReportBalance";
 import Invoice from "views/Transaksi/Penjualan/invoice";
+import ReportMekanik from "views/Report/ReportMekanik";
+import ReportProduk from "views/Report/ReportProduk";
 
 const dashboardRoutes = [
   {
@@ -127,6 +129,22 @@ const dashboardRoutes = [
     name: "Balance",
     icon: "nc-icon nc-paper-2",
     component: ReportBalance,
+    layout: "/admin"
+  },
+  {
+    parent: "Report",
+    path: "/report-mekanik",
+    name: "Mekanik",
+    icon: "nc-icon nc-paper-2",
+    component: ReportMekanik,
+    layout: "/admin"
+  },
+  {
+    parent: "Report",
+    path: "/report-produk",
+    name: "Spare Part",
+    icon: "nc-icon nc-paper-2",
+    component: ReportProduk,
     layout: "/admin"
   },
   {

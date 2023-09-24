@@ -45,10 +45,10 @@ export const ModalDetail = ({ showModalDetail, Action, SetState, Type, State, me
                                 'Qty',
                                 'Total Harga']} Field={[
                                     'nama',
-                                    'kodeProduk',
-                                    'hargaSatuan',
+                                    'kode_produk',
+                                    'harga_satuan',
                                     'qty',
-                                    'totalHarga']}
+                                    'total_harga']}
                             Menu='Detail Transaksi Produk'
                             Action={[(e) => getDetailData(e.target.id), (e) => handleDelete(e.target.id)]}
                         />
@@ -114,10 +114,10 @@ export const ModalRetur = ({ showModal, Action, SetState, Type, State, mekanik, 
                                 'Qty',
                                 'Total Harga']} Field={[
                                     'nama',
-                                    'kodeProduk',
-                                    'hargaSatuan',
-                                    'qty',
-                                    'totalHarga']}
+                                    'kode_produk',
+                                    'harga_satuan',
+                                    'stok_terjual',
+                                    'total_harga']}
                             Menu='Detail Transaksi Produk'
                             Action={[(e) => getDetailData(e.target.id), (e) => handleDelete(e.target.id)]}
                         />
