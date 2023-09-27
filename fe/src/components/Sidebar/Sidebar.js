@@ -46,7 +46,7 @@ function Sidebar({ color, image, routes }) {
             </div>
           </a>
           <span className="fw-bold">
-            FAHMI MOTOR
+            FAHMI BAN
           </span>
 
 
