@@ -39,16 +39,17 @@ const LandingPage = () => {
         const data = await getApi('report/produk?date=' + date + '&produk=' + produk);
 
         setReport(data);
+        if (data && data.length > 0) {
+            const customData = data.map(i => ({
+                'Periode': moment(i.createdAt).format('MM-YYYY'),
+                'Spare Part': i.nama,
+                'Modal': i.modal,
+                'Terjual': i.total_jual,
+                'Keuntungan': i.keuntungan,
+            }))
 
-        const customData = data.map(i => ({
-            'Periode': moment(i.createdAt).format('MM-YYYY'),
-            'Spare Part': i.nama,
-            'Modal': i.modal,
-            'Terjual': i.total_jual,
-            'Keuntungan': i.keuntungan,
-        }))
-
-        setDataExcel(customData)
+            setDataExcel(customData)
+        }
     };
 
     const clearFilter = () => {
