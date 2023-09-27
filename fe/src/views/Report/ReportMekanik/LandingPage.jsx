@@ -39,14 +39,16 @@ const LandingPage = () => {
         const data = await getApi('report/mekanik?date=' + date + '&mekanik=' + namaMekanik);
 
         setReport(data);
+        if (data && data.length > 0) {
+            const customData = data.map(i => ({
+                'Periode': moment(i.createdAt).format('MM-YYYY'),
+                'Nama Mekanik': i.mekanik,
+                'Ongkos': i.ongkos,
+            }))
 
-        const customData = data.map(i => ({
-            'Periode': moment(i.createdAt).format('MM-YYYY'),
-            'Nama Mekanik': i.mekanik,
-            'Ongkos': i.ongkos,
-        }))
+            setDataExcel(customData)
+        }
 
-        setDataExcel(customData)
     };
 
     const clearFilter = () => {
