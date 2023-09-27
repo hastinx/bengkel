@@ -212,7 +212,7 @@ const LandingPage = () => {
                     <div ref={componentRef} style={{ width: '95%', display: 'flex', justifyContent: 'center', height: window.innerHeight, marginLeft: '10px', marginRight: '10px' }}>
                         <div style={{ width: '100%' }}>
                             <header style={{ marginLeft: '10px' }}>
-                                <h2>BENGKEL FAHMI MOTOR</h2>
+                                <h2>FAHMI MOTOR</h2>
                             </header>
                             <section style={{ marginLeft: '10px', marginRight: '10px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
