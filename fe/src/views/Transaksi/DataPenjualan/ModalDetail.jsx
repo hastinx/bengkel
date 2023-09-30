@@ -14,8 +14,8 @@ export const ModalDetail = ({ showModalDetail, Action, SetState, Type, State, me
             size="xl"
         >
 
-            <Modal.Header className="justify-content-center">
-                DETAIL TRANSAKSI - {mekanik.length === 0 ? '' : mekanik[0].codeTransaksi}
+            <Modal.Header className="justify-content-center fw-bold" closeButton>
+                DETAIL TRANSAKSI - {mekanik.length === 0 ? '' : mekanik[0].kode_transaksi}
             </Modal.Header>
             <Modal.Body className="">
                 <div>Jasa Mekanik</div>
@@ -47,7 +47,7 @@ export const ModalDetail = ({ showModalDetail, Action, SetState, Type, State, me
                                     'nama',
                                     'kode_produk',
                                     'harga_satuan',
-                                    'qty',
+                                    'stok_terjual',
                                     'total_harga']}
                             Menu='Detail Transaksi Produk'
                             Action={[(e) => getDetailData(e.target.id), (e) => handleDelete(e.target.id)]}
@@ -81,8 +81,8 @@ export const ModalRetur = ({ showModal, Action, SetState, Type, State, mekanik, 
             size="xl"
         >
 
-            <Modal.Header className="justify-content-center fs-bold" closeButton>
-                DETAIL TRANSAKSI - {mekanik.length === 0 ? '' : mekanik[0].codeTransaksi}
+            <Modal.Header className="justify-content-center fw-bold" closeButton>
+                DETAIL TRANSAKSI - {mekanik.length === 0 ? '' : mekanik[0].kode_transaksi}
 
 
             </Modal.Header>

@@ -21,6 +21,7 @@ import Select from 'react-select';
 import Swal from 'sweetalert2';
 import Invoice from './invoice';
 import { useReactToPrint } from 'react-to-print'
+import ModalForm from './ModalForm';
 const options = [];
 const tipe = [
     { value: 'cash', label: 'cash' },
@@ -32,11 +33,14 @@ const status = [
 ];
 var arrMekanik = [];
 var optionMekanik = [];
+var optionCustomer = [];
 
 const LandingPage = () => {
 
     const history = useHistory()
+    const [showModal, setShowModal] = useState(false)
     const [modalShow, setModalShow] = useState(false)
+    const [optionsCustomer, setOptionCustomer] = useState([])
     const [selectedOption, setSelectedOption] = useState(null);
     const [selectedTipe, setSelectedTipe] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState(null);
@@ -60,8 +64,66 @@ const LandingPage = () => {
     const [invoiceProduk, setInvoiceProduk] = useState([])
     const [mekanik, setMekanik] = useState([])
     const componentRef = useRef(), optionMekanik1 = useRef(), optionMekanik2 = useRef(), optionMekanik3 = useRef(), optionProduk = useRef(), optionType = useRef(), optionJenis = useRef()
+    //===============STATE INSERT NEW CUSTOMER ========================
 
+    const [newNama, setNewNama] = useState("")
+    const [newHp, setNewHp] = useState("")
+    const [newAlamat, setNewAlamat] = useState("")
+    const [newKendaraan, setNewKendaraan] = useState("")
+    const [newPlat, setNewPlat] = useState("")
+    //===============STATE INSERT NEW CUSTOMER ========================
 
+    const logo = require('./../../../assets/img/FM_BAN.png')
+
+    const getDataCustomer = async () => {
+        const data = await getApi('master/customer');
+        console.log(data)
+        optionCustomer = []
+        if (data && data.length > 0) {
+            data.map(i => {
+                optionCustomer.push({
+                    value: i.no_plat,
+                    label: i.no_plat
+                })
+            })
+        }
+        setOptionCustomer(data);
+    };
+
+    const clearFieldCustomer = () => {
+        setCustomer('')
+        setNoHp('')
+        setAlamat('')
+        setKendaraan('')
+        setNoPlat('')
+    }
+
+    const clearFieldInsertCustomer = () => {
+        setNewNama("")
+        setNewHp("")
+        setNewAlamat("")
+        setNewKendaraan("")
+        setNewPlat("")
+    }
+
+    const addNewCustomer = async () => {
+        try {
+            const res = await axios.post(process.env.REACT_APP_API + "master/customer/add", {
+                nama: newNama,
+                hp: newHp,
+                alamat: newAlamat,
+                kendaraan: newKendaraan,
+                no_plat: newPlat
+            })
+            Swal.fire(res.data.message)
+            getDataCustomer()
+            setShowModal(false)
+            clearFieldInsertCustomer()
+        } catch (error) {
+            console.log(error)
+            error.response ? Swal.fire(error.response.data.message) : ""
+        }
+    }
 
     const getOptionSpareParts = async () => {
         try {
@@ -149,6 +211,15 @@ const LandingPage = () => {
 
         } catch (error) {
             console.log(error)
+        }
+    }
+
+    const removeFromCart = async (id) => {
+        try {
+            await axios.delete(process.env.REACT_APP_API + 'cart/' + id)
+            getCart()
+        } catch (error) {
+
         }
     }
 
@@ -248,14 +319,27 @@ const LandingPage = () => {
 
     const handleToPrint = useReactToPrint({
         content: () => componentRef.current,
-        documentTitle: 'emp-date',
-        onAfterPrint: () => alert('Print Success')
+        documentTitle: 'fahmi-ban-invoice'
     })
+
+    const getCustomerByNoPlat = async (no_plat) => {
+        try {
+            const data = await getApi('master/customer/byPlat?noPlat=' + no_plat);
+            setCustomer(data[0].nama)
+            setNoHp(data[0].hp)
+            setAlamat(data[0].alamat)
+            setKendaraan(data[0].kendaraan)
+            setNoPlat(data[0].no_plat)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     useEffect(() => {
         getOptionSpareParts()
         getOptionMekanik()
         getCart()
+        getDataCustomer()
     }, [])
 
     useEffect(() => {
@@ -282,6 +366,7 @@ const LandingPage = () => {
                                                             placeholder="PEMILIK KENDARAAN"
                                                             type="text"
                                                             id="customer"
+                                                            defaultValue={customer}
                                                             onChange={(e) => setCustomer(e.target.value)}
                                                         ></Form.Control>
                                                     </Form.Group>
@@ -295,6 +380,8 @@ const LandingPage = () => {
                                                             placeholder="NO.HP"
                                                             type="text"
                                                             id="noHp"
+                                                            defaultValue={noHp}
+                                                            value={noHp}
                                                             onChange={(e) => setNoHp(e.target.value)}
                                                         ></Form.Control>
                                                     </Form.Group>
@@ -309,6 +396,7 @@ const LandingPage = () => {
                                                             placeholder="ALAMAT"
                                                             type="text"
                                                             id="alamat"
+                                                            defaultValue={alamat}
                                                             onChange={(e) => setAlamat(e.target.value)}
                                                         ></Form.Control>
                                                     </Form.Group>
@@ -324,21 +412,29 @@ const LandingPage = () => {
                                                             placeholder="KENDARAAN"
                                                             type="text"
                                                             id="kendaraan"
+                                                            defaultValue={kendaraan}
                                                             onChange={(e) => setKendaraan(e.target.value)}
                                                         ></Form.Control>
                                                     </Form.Group>
                                                 </Col>
                                                 <Col className="pl-1" md="6">
                                                     <Form.Group>
-                                                        <label className='fw-bold text-dark'>NO.PLAT KENDARAAN</label>
-                                                        <Form.Control
-                                                            // defaultValue="Andrew"
-                                                            className='text-uppercase'
-                                                            placeholder="NO.PLAT KENDARAAN"
-                                                            type="text"
-                                                            id="noPlat"
-                                                            onChange={(e) => setNoPlat(e.target.value)}
-                                                        ></Form.Control>
+                                                        <label className='fw-bold text-dark'>NO.PLAT KENDARAAN
+                                                            <Button
+                                                                className="btn-simple"
+                                                                type="button"
+                                                                variant="link"
+                                                                onClick={() => setShowModal(true)}
+                                                            >
+                                                                Tambah data customer
+                                                            </Button>
+                                                        </label>
+                                                        <Select
+                                                            ref={optionCustomer}
+                                                            isClearable={true}
+                                                            onChange={(e) => { e !== null ? getCustomerByNoPlat(e.value) : clearFieldCustomer() }}
+                                                            options={optionCustomer}
+                                                        />
                                                     </Form.Group>
                                                 </Col>
                                             </Row>
@@ -573,6 +669,7 @@ const LandingPage = () => {
                                                     <th>Harga</th>
                                                     <th>Qty</th>
                                                     <th>Total</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -582,6 +679,15 @@ const LandingPage = () => {
                                                         <td>{i.harga_satuan}</td>
                                                         <td><input type='number' defaultValue={i.stok_terjual} onChange={(e) => addToCart(i.harga_satuan, i.kode_produk, e.target.value)} /></td>
                                                         <td>{formatRupiah(Number(i.stok_terjual * i.harga_satuan))}</td>
+                                                        <td><Button
+                                                            className="btn-simple btn-link p-1"
+                                                            type="button"
+                                                            variant="danger"
+                                                            id={i.id}
+                                                            onClick={(e) => removeFromCart(e.target.id)}
+                                                        >
+                                                            <i className="fas fa-times" id={i.id}></i>
+                                                        </Button></td>
                                                     </tr>) : ""}
 
                                             </tbody>
@@ -633,177 +739,198 @@ const LandingPage = () => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div ref={componentRef} style={{ width: '100%', height: window.innerHeight }}>
-
-                        <header style={{ marginLeft: '10px' }}>
-                            <h2>FAHMI BAN</h2>
-                        </header>
-                        <section style={{ marginLeft: '10px', marginRight: '10px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{ display: 'block' }}>
-                                    <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Nama Customer</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].customer}</div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>No.HP</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].noHp}</div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Alamat</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].alamat}</div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Kendaraan</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].kendaraan}</div>
-                                    </div>
-                                </div>
-                                <div className='col-md-6'>
-                                    <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>No.Plat</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', textTransform: 'uppercase' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].no_plat}</div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>KM Mobil</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].km_masuk + " - " + invoiceHeader[0].km_keluar}</div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Tipe Transaksi</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].tipe_transaksi}</div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 4 }}>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Status</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
-                                        <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].status_pembayaran}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr />
-                            <div style={{ marginTop: '20px', marginBottom: '15px' }}>
-                                <table style={{ width: '100%', border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                    <thead style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                        <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
-                                                Spare Part
-                                            </th>
-                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
-                                                Qty
-                                            </th>
-                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
-                                                Harga Satuan
-                                            </th>
-                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
-                                                Harga Total
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                        {invoiceProduk.length === 0 ? <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                        </tr> :
-                                            invoiceProduk.map(i =>
-                                                <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>
-                                                        {i.nama}
-                                                    </td>
-                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'center', fontFamily: 'Arial' }}>
-                                                        {i.qty}
-                                                    </td>
-                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
-                                                        {formatRupiah(i.hargaSatuan)}
-                                                    </td>
-                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
-                                                        {formatRupiah(i.totalHarga)}
-                                                    </td>
-                                                </tr>
-                                            )
-                                        }
-                                        <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <td colSpan={3} style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', fontWeight: 'bolder' }}>
-                                                Total
-                                            </td>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
-                                                {formatRupiah(totalPrica)}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <table style={{ width: '100%', border: '1px solid #000', borderCollapse: 'collapse', marginTop: '2px' }}>
-                                    <thead style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                        <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
-                                                Mekanik
-                                            </th>
-                                            <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
-                                                Ongkos
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                        {invoiceMekanik.length === 0 ? <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
-                                        </tr> :
-                                            invoiceMekanik.map(i =>
-                                                <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>
-                                                        {i.mekanik}
-                                                    </td>
-                                                    <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
-                                                        {formatRupiah(i.ongkos)}
-                                                    </td>
-                                                </tr>
-                                            )
-
-                                        }
-                                        <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', fontWeight: 'bolder' }}>
-                                                Total Ongkos
-                                            </td>
-                                            <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
-                                                {formatRupiah(ongkosMekanik)}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <hr />
-                                <div style={{ display: 'flex', justifyContent: 'end' }}><span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>TOTAL : {formatRupiah(totalPrica + ongkosMekanik)}</span> </div>
-                                <hr />
-
+                    <div ref={componentRef} style={{ width: '95%', display: 'flex', justifyContent: 'center', height: window.innerHeight, marginLeft: '10px', marginRight: '10px' }}>
+                        <div style={{ width: '100%' }}>
+                            <header style={{ marginLeft: '10px' }}>
+                                {/* <h2>FAHMI BAN</h2> */}
+                                <img src={logo} alt='' style={{ height: '50px', marginTop: '20px', marginBottom: '30px' }} />
+                            </header>
+                            <section style={{ marginLeft: '10px', marginRight: '10px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <div>
-                                        <span style={{ fontFamily: 'Arial', fontSize: '11px' }}>Diterima</span>
-                                        <br />
-                                        <br />
-                                        <br />
-                                        <span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].customer}</span>
+                                    <div style={{ display: 'block' }}>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Nama Customer</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].customer}</div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>No.HP</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].noHp}</div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Alamat</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].alamat}</div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Kendaraan</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].kendaraan}</div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <span style={{ fontFamily: 'Arial', fontSize: '11px' }}>Tgl, {moment().format('DD/MM/YYYY hh:mm')}</span>
-                                        <br />
-                                        <br />
-                                        <br />
-                                        <span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>...................................</span>
+                                    <div className='col-md-6'>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>No.Plat</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', textTransform: 'uppercase' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].no_plat}</div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>KM Mobil</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].km_masuk + " - " + invoiceHeader[0].km_keluar}</div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Tipe Transaksi</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].tipe_transaksi}</div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 4 }}>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>Status</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>:</div>
+                                            <div style={{ fontFamily: 'Arial', fontSize: '11px' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].status_pembayaran}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </section>
+                                <hr />
+                                <div style={{ marginTop: '20px', marginBottom: '15px' }}>
+                                    <table style={{ width: '100%', border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                        <thead style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                            <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                                <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                                    Spare Part
+                                                </th>
+                                                <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                                    Qty
+                                                </th>
+                                                <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                                    Harga Satuan
+                                                </th>
+                                                <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                                    Harga Total
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                            {invoiceProduk.length === 0 ? <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                            </tr> :
+                                                invoiceProduk.map(i =>
+                                                    <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                                        <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>
+                                                            {i.nama}
+                                                        </td>
+                                                        <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'center', fontFamily: 'Arial' }}>
+                                                            {i.qty}
+                                                        </td>
+                                                        <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                                            {formatRupiah(i.hargaSatuan)}
+                                                        </td>
+                                                        <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                                            {formatRupiah(i.totalHarga)}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            }
+                                            <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                                <td colSpan={3} style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', fontWeight: 'bolder' }}>
+                                                    Total
+                                                </td>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                                    {formatRupiah(totalPrica)}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table style={{ width: '100%', border: '1px solid #000', borderCollapse: 'collapse', marginTop: '2px' }}>
+                                        <thead style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                            <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                                <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                                    Mekanik
+                                                </th>
+                                                <th style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', textAlign: 'center', fontWeight: 'bolder' }}>
+                                                    Ongkos
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                            {invoiceMekanik.length === 0 ? <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>-</td>
+                                            </tr> :
+                                                invoiceMekanik.map(i =>
+                                                    <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                                        <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial' }}>
+                                                            {i.mekanik}
+                                                        </td>
+                                                        <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                                            {formatRupiah(i.ongkos)}
+                                                        </td>
+                                                    </tr>
+                                                )
+
+                                            }
+                                            <tr style={{ border: '1px solid #000', borderCollapse: 'collapse' }}>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', fontFamily: 'Arial', fontWeight: 'bolder' }}>
+                                                    Total Ongkos
+                                                </td>
+                                                <td style={{ border: '1px solid #000', fontSize: '11px', borderCollapse: 'collapse', padding: '3px', textAlign: 'right', fontFamily: 'Arial' }}>
+                                                    {formatRupiah(ongkosMekanik)}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <hr />
+                                    <div style={{ display: 'flex', justifyContent: 'end' }}><span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>TOTAL : {formatRupiah(totalPrica + ongkosMekanik)}</span> </div>
+                                    <hr />
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <div>
+                                            <span style={{ fontFamily: 'Arial', fontSize: '11px' }}>Diterima</span>
+                                            <br />
+                                            <br />
+                                            <br />
+                                            <span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>{invoiceHeader.length === 0 ? '' : invoiceHeader[0].customer}</span>
+                                        </div>
+                                        <div>
+                                            <span style={{ fontFamily: 'Arial', fontSize: '11px' }}>Tgl, {moment().format('DD/MM/YYYY hh:mm')}</span>
+                                            <br />
+                                            <br />
+                                            <br />
+                                            <span style={{ fontFamily: 'Arial', fontSize: '11px', fontWeight: 'bolder' }}>...................................</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={() => setModalShow(false)}>Close</Button>
                 </Modal.Footer>
             </Modal>
+
+            <ModalForm
+                showModal={showModal}
+                Action={[() => { setShowModal(false); clearFieldInsertCustomer() }, () => addNewCustomer()]}
+                SetState={[
+                    (e) => setNewNama(e.target.value),
+                    (e) => setNewHp(e.target.value),
+                    (e) => setNewAlamat(e.target.value),
+                    (e) => setNewKendaraan(e.target.value),
+                    (e) => setNewPlat(e.target.value)
+                ]}
+                State={[
+                    newNama,
+                    newHp,
+                    newAlamat,
+                    newKendaraan,
+                    newPlat
+                ]}
+            />
         </>
     )
 }

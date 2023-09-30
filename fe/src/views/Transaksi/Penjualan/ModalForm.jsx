@@ -1,8 +1,7 @@
 import React from 'react'
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap'
 
-const ModalForm = ({ showModal, Action, SetState, Type, State }) => {
-    console.log('Type', Type)
+const ModalForm = ({ showModal, Action, SetState, State, Type }) => {
     return (
         <Modal
             className="modal modal-primary"
@@ -10,78 +9,75 @@ const ModalForm = ({ showModal, Action, SetState, Type, State }) => {
             onHide={Action[0]}
         >
             <Modal.Header className="justify-content-center">
-                {Type === "edit" ? "Edit " : ""}Master Spare Part
+                {Type === "edit" ? "Edit " : ""}Tambah Customer Baru
             </Modal.Header>
             <Modal.Body className="">
-                <Row className='mt-2'>
-                    <Col md="4"><label>Kode</label></Col>
-                    <Col className="pr-1" md="8">
-                        <Form.Group>
-                            <Form.Control
-                                defaultValue={State[0]}
-                                placeholder="Kode spare part"
-                                type="text"
-                                onChange={SetState[0]}
-                            ></Form.Control>
-                        </Form.Group>
-                    </Col>
-                </Row>
                 <Row className='mt-2'>
                     <Col md="4"><label>Nama</label></Col>
                     <Col className="pr-1" md="8">
                         <Form.Group>
                             <Form.Control
-                                defaultValue={State[1]}
-                                placeholder="Nama spare part"
+                                defaultValue={State[0]}
+                                placeholder="Customer"
                                 type="text"
-                                onChange={SetState[1]}
+                                onChange={SetState[0]}
+                                className='text-uppercase'
                             ></Form.Control>
                         </Form.Group>
                     </Col>
                 </Row>
                 <Row className='mt-2'>
-                    <Col md="4"><label>Jumlah</label></Col>
+                    <Col md="4"><label>No.Hp</label></Col>
                     <Col className="pr-1" md="8">
                         <Form.Group>
-                            {Type === 'edit' ? <Form.Control
-                                defaultValue={State[2]}
-                                placeholder="Stock spare part"
+                            <Form.Control
+                                defaultValue={State[1]}
+                                placeholder="No.Hp"
                                 type="text"
-                                onChange={SetState[2]}
-                                disabled
-                            ></Form.Control> :
-                                <Form.Control
-                                    defaultValue={State[2]}
-                                    placeholder="Stock spare part"
-                                    type="text"
-                                    onChange={SetState[2]}
-                                ></Form.Control>}
-
+                                onChange={SetState[1]}
+                                className='text-uppercase'
+                            ></Form.Control>
                         </Form.Group>
                     </Col>
                 </Row>
                 <Row className='mt-2'>
-                    <Col md="4"><label>Harga Modal</label></Col>
+                    <Col md="4"><label>Alamat</label></Col>
+                    <Col className="pr-1" md="8">
+                        <Form.Group>
+                            <Form.Control
+                                defaultValue={State[2]}
+                                placeholder="Alamat"
+                                type="text"
+                                onChange={SetState[2]}
+                                className='text-uppercase'
+                            ></Form.Control>
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row className='mt-2'>
+                    <Col md="4"><label>Kendaraan</label></Col>
                     <Col className="pr-1" md="8">
                         <Form.Group>
                             <Form.Control
                                 defaultValue={State[3]}
-                                placeholder="Harga Modal"
+                                placeholder="Kendaraan"
                                 type="text"
                                 onChange={SetState[3]}
+                                className='text-uppercase'
                             ></Form.Control>
                         </Form.Group>
                     </Col>
                 </Row>
                 <Row className='mt-2'>
-                    <Col md="4"><label>Harga Jual</label></Col>
+                    <Col md="4"><label>No.Plat</label></Col>
                     <Col className="pr-1" md="8">
                         <Form.Group>
                             <Form.Control
                                 defaultValue={State[4]}
-                                placeholder="Harga Jual"
+                                placeholder="No.Plat"
                                 type="text"
                                 onChange={SetState[4]}
+                                className='text-uppercase'
                             ></Form.Control>
                         </Form.Group>
                     </Col>
@@ -90,9 +86,9 @@ const ModalForm = ({ showModal, Action, SetState, Type, State }) => {
             </Modal.Body>
             <div className="modal-footer">
                 <Button
-                    className="btn btn-danger btn-fill"
+                    className="btn-fill"
                     type="button"
-                    variant="solid"
+                    variant="danger"
                     onClick={Action[0]}
                 >
                     Kembali

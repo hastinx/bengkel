@@ -51,7 +51,7 @@ const TableData = ({ Data, Header, Field, Menu, Action }) => {
                         i === 'total_terjual' ? (
                           <td key={i} className='text-end border-1'>{formatRupiah(Number(el['qtyTerjual']) * Number(el['harga_jual']))}</td>
                         ) :
-                          i === 'total_jual' || i === 'modal' || i === 'keuntungan' ? (
+                          i === 'total_jual' || i === 'modal' || i === 'keuntungan' || i === 'total_harga' || i === 'harga_satuan' ? (
                             <td key={i} className='text-end border-1'>{formatRupiah(Number(el[i]))}</td>
                           ) : (
                             <td className='border-1 text-center' key={i}>{el[i]}</td>

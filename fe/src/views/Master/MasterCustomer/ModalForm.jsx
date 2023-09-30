@@ -21,6 +21,7 @@ const ModalForm = ({ showModal, Action, SetState, State, Type }) => {
                                 placeholder="Customer"
                                 type="text"
                                 onChange={SetState[0]}
+                                className='text-uppercase'
                             ></Form.Control>
                         </Form.Group>
                     </Col>
@@ -34,6 +35,7 @@ const ModalForm = ({ showModal, Action, SetState, State, Type }) => {
                                 placeholder="No.Hp"
                                 type="text"
                                 onChange={SetState[1]}
+                                className='text-uppercase'
                             ></Form.Control>
                         </Form.Group>
                     </Col>
@@ -47,6 +49,35 @@ const ModalForm = ({ showModal, Action, SetState, State, Type }) => {
                                 placeholder="Alamat"
                                 type="text"
                                 onChange={SetState[2]}
+                                className='text-uppercase'
+                            ></Form.Control>
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row className='mt-2'>
+                    <Col md="4"><label>Kendaraan</label></Col>
+                    <Col className="pr-1" md="8">
+                        <Form.Group>
+                            <Form.Control
+                                defaultValue={State[3]}
+                                placeholder="Kendaraan"
+                                type="text"
+                                onChange={SetState[3]}
+                                className='text-uppercase'
+                            ></Form.Control>
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row className='mt-2'>
+                    <Col md="4"><label>No.Plat</label></Col>
+                    <Col className="pr-1" md="8">
+                        <Form.Group>
+                            <Form.Control
+                                defaultValue={State[4]}
+                                placeholder="No.Plat"
+                                type="text"
+                                onChange={SetState[4]}
+                                className='text-uppercase'
                             ></Form.Control>
                         </Form.Group>
                     </Col>
@@ -55,18 +86,18 @@ const ModalForm = ({ showModal, Action, SetState, State, Type }) => {
             </Modal.Body>
             <div className="modal-footer">
                 <Button
-                    className="btn-simple"
+                    className="btn-fill"
                     type="button"
-                    variant="link"
+                    variant="danger"
                     onClick={Action[0]}
                 >
                     Kembali
                 </Button>
                 <Button
-                    className="btn btn-success"
+                    className="btn btn-success btn-fill"
                     type="button"
                     variant="solid"
-                    onClick={Type = "edit" ? Action[2] : Action[1]}
+                    onClick={Type === "edit" ? Action[2] : Action[1]}
                 >
                     Simpan
                 </Button>

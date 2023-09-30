@@ -34,14 +34,30 @@ const LandingPage = () => {
     const [jumlah, setJumlah] = useState("");
     const [eId, setId] = useState(0);
     const [type, setType] = useState("");
+    const [filter, setFilter] = useState("");
     const [loading, setLoading] = useState(false)
 
     const getList = async () => {
         setLoading(true)
-        const data = await getApi('master/produk');
+        const data = await getApi('master/produk?filterBy=' + filter);
         setProduk(data);
         setLoading(false)
     };
+
+    const clearField = () => {
+        setNama("")
+        setKode("")
+        setHargaModal("")
+        setHargaJual("")
+        setJumlah("")
+    }
+
+    const clearFilter = async () => {
+        setFilter("")
+        const data = await getApi('master/produk');
+        setProduk(data);
+
+    }
 
     const addSparePart = async () => {
         try {
@@ -57,6 +73,7 @@ const LandingPage = () => {
             Swal.fire(res.data.message)
             getList()
             setShowModal(false)
+            clearField()
         } catch (error) {
             console.log(error)
             Swal.fire(error.response.data.message)
@@ -79,7 +96,7 @@ const LandingPage = () => {
         setKode(data[0].kode)
         setHargaModal(data[0].harga_modal)
         setHargaJual(data[0].harga_jual)
-        setJumlah(data[0].qty)
+        setJumlah(data[0].stok)
         setId(data[0].id)
         setType("edit")
         setShowModal(true)
@@ -92,12 +109,13 @@ const LandingPage = () => {
                 kode: kode,
                 harga_modal: harga_modal,
                 harga_jual: harga_jual,
-                qty: jumlah,
+                stok_input: jumlah,
             })
 
             Swal.fire(res.data.message)
             getList()
             setShowModal(false)
+            clearField()
         } catch (error) {
             error.response ? Swal.fire(error.response.data.message) : ""
         }
@@ -108,14 +126,36 @@ const LandingPage = () => {
     }, [])
     return (
         <>
-            <MasterContainer title='Master Spare Part' action={() => setShowModal(true)} actionTItle=' Tambah Spare Part'>
+            <MasterContainer title='Master Spare Part' action={() => { setShowModal(true); setType(""); clearField() }} actionTItle=' Tambah Spare Part'>
+                <Card>
+                    <Card.Body>
+                        <div className='d-flex justify-content-Start gap-2'>
+                            <div className='form-group'>
+                                <label className='form-label'>Kode / Nama</label>
+                                <input type='text' className='form-control' placeholder='Kode Barang / Nama' value={filter} onChange={(e) => setFilter(e.target.value)} />
+                            </div>
+                            <div className='form-group'>
+                                <label className='form-label'>Action</label>
+                                <div className='d-flex gap-2'>
+                                    <button className='btn btn-success btn-fill form-control' onClick={() => getList()}>
+                                        Search
+                                    </button>
+                                    <button className='btn btn-warning btn-fill form-control' onClick={() => clearFilter()}>
+                                        Clear
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </Card.Body>
+                </Card>
                 {loading ? <Spinner /> : <TableData Data={produk} Header={['Periode', 'Nama', 'Kode', 'Stok Input', 'Stok', 'Terjual', 'Sisa', 'Harga Modal', 'Harga Jual']} Field={['createdAt', 'nama', 'kode', 'stok_input', 'stok', 'stok_terjual', 'stok_sisa', 'harga_modal', 'harga_jual']} Menu='Master Spare Part' Action={[(e) => getEditData(e.target.id), (e) => handleDelete(e.target.id)]} />}
 
             </MasterContainer>
             <ModalForm
                 showModal={showModal}
                 Type={type}
-                Action={[() => setShowModal(false), () => addSparePart(), () => handleUpdate()]}
+                Action={[() => { setShowModal(false); setType(""); clearField() }, () => addSparePart(), () => handleUpdate()]}
                 SetState={[
                     (e) => setKode(e.target.value),
                     (e) => setNama(e.target.value),

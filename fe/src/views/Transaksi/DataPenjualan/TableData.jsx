@@ -40,7 +40,8 @@ export const TablePenjualan = ({ Data, Header, Field, Menu, Action }) => {
                                         >
                                             {el[i]}
                                         </Button></td>) :
-                                            <td className='border-1' key={i}>{el[i]}</td>
+                                            i === 'harga_satuan' || i === 'total_harga' ? <td className='border-1' key={i}>{formatRupiah(el[i])}</td> :
+                                                <td className='border-1' key={i}>{el[i]}</td>
 
                                     )}
 

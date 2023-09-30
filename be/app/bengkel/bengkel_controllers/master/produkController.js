@@ -5,11 +5,8 @@ module.exports = {
     getAll: async (req, res) => {
         let filter = `is_deleted=0`
 
-        if (req.query.nama) {
-            filter += ` AND nama LIKE '%${req.query.nama}%'`
-        }
-        if (req.query.kode) {
-            filter += ` AND kode LIKE '%${req.query.kode}%'`
+        if (req.query.filterBy && req.query.filterBy !== '') {
+            filter += ` AND nama LIKE '%${req.query.filterBy}%' OR kode LIKE '%${req.query.filterBy}%'`
         }
         const [result] = await promise.query(`SELECT * FROM bkl_mst_produk WHERE ${filter}`)
 
@@ -96,7 +93,7 @@ module.exports = {
         let { nama, kode, harga_modal, harga_jual } = req.body
         console.log(req.body)
 
-        await promise.query(`UPDATE bkl_mst_produk SET nama='${nama}',kode='${kode}',harga_modal=${harga_modal},harga_jual=${harga_jual},updatedAt=NOW() WHERE id=${id}`)
+        await promise.query(`UPDATE bkl_mst_produk SET nama='${nama.toUpperCase()}',kode='${kode.toUpperCase()}',harga_modal=${harga_modal},harga_jual=${harga_jual},updatedAt=NOW() WHERE id=${id}`)
 
         return res.json({
             status: 200,

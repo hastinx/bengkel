@@ -44,6 +44,7 @@ const LandingPage = () => {
     const [invoiceProduk, setInvoiceProduk] = useState([])
     const [totalPrica, setTotalPrica] = useState(0)
     const componentRef = useRef()
+    const logo = require('./../../../assets/img/FM_BAN.png')
 
     const getList = async () => {
         const data = await getApi('transaksi?start=' + moment(startDate).format('YYYY-MM-DD') + '&end=' + moment(endDate).format('YYYY-MM-DD') + '&inv=' + invoice);
@@ -61,7 +62,7 @@ const LandingPage = () => {
         setOngkosMekanik(oMekanik)
         const detailData = await getApi('transaksi/' + id + '/produk');
         setDetailPart(detailData)
-        detailData.map(i => sPart += i.totalHarga)
+        detailData.map(i => sPart += i.total_harga)
         setSparePart(sPart)
         setShowModalDetail(true)
     };
@@ -118,8 +119,7 @@ const LandingPage = () => {
 
     const handleToPrint = useReactToPrint({
         content: () => componentRef.current,
-        documentTitle: 'emp-date',
-        onAfterPrint: () => alert('Print Success')
+        documentTitle: 'fahmi-ban-invoice'
     })
 
     useEffect(() => {
@@ -212,7 +212,7 @@ const LandingPage = () => {
                     <div ref={componentRef} style={{ width: '95%', display: 'flex', justifyContent: 'center', height: window.innerHeight, marginLeft: '10px', marginRight: '10px' }}>
                         <div style={{ width: '100%' }}>
                             <header style={{ marginLeft: '10px' }}>
-                                <h2>FAHMI BAN</h2>
+                                <img src={logo} alt='' style={{ height: '50px', marginTop: '20px', marginBottom: '30px' }} />
                             </header>
                             <section style={{ marginLeft: '10px', marginRight: '10px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>

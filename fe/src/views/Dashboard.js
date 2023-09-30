@@ -1,5 +1,6 @@
 import { formatRupiah } from "helper";
 import { getApi } from "helper/api";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 // import ChartistGraph from "react-chartist";
 // react-bootstrap components
@@ -18,21 +19,26 @@ import {
   Tooltip,
 } from "react-bootstrap";
 
+
+
 function Dashboard() {
   const [mekanik, setMekanik] = useState([])
   const [produk, setProduk] = useState([])
   const [cash, setCash] = useState([])
   const [hutang, setHutang] = useState([])
+  const [transactionToday, setTransactionToday] = useState([])
 
   const getList = async () => {
-    const mekanik = await getApi('dashboard/summary/mekanik');
+    const mekanik = await getApi('dashboard/summary/mekanik?createdAt=' + moment().format('YYYY-MM'));
     setMekanik(mekanik);
-    const produk = await getApi('dashboard/summary/produk');
+    const produk = await getApi('dashboard/summary/produk?createdAt=' + moment().format('YYYY-MM'));
     setProduk(produk);
-    const cash = await getApi('dashboard/summary/cash');
+    const cash = await getApi('dashboard/summary/cash?createdAt=' + moment().format('YYYY-MM'));
     setCash(cash);
-    const hutang = await getApi('dashboard/summary/hutang');
+    const hutang = await getApi('dashboard/summary/hutang?createdAt=' + moment().format('YYYY-MM'));
     setHutang(hutang);
+    const today = await getApi('dashboard/summary/transaksi/today?createdAt=' + moment().format('YYYY-MM-DD'));
+    setTransactionToday(today);
   };
 
   useEffect(() => {
@@ -54,14 +60,14 @@ function Dashboard() {
                   <Col xs="7">
                     <div className="numbers">
                       <p className="card-category">Spare Part Terlaris</p>
-                      {produk && produk.length > 0 ? produk.map((i) => <Card.Title as="h4">{i.nama} </Card.Title>) : <Card.Title as="h4">- </Card.Title>}
+                      {produk && produk.length > 0 ? produk.map((i) => <Card.Title as="h2">{i.nama} </Card.Title>) : <Card.Title as="h2">- </Card.Title>}
                     </div>
                   </Col>
                 </Row>
               </Card.Body>
               <Card.Footer>
                 <hr></hr>
-                {produk && produk.length > 0 ? produk.map((i) => <Card.Title as="h4">{i.count} </Card.Title>) : <Card.Title as="h4">0</Card.Title>}
+                {produk && produk.length > 0 ? produk.map((i) => <Card.Title as="h2">{i.count} </Card.Title>) : <Card.Title as="h2">0</Card.Title>}
               </Card.Footer>
             </Card>
           </Col>
@@ -77,14 +83,14 @@ function Dashboard() {
                   <Col xs="7">
                     <div className="numbers">
                       <p className="card-category">Mekanik Terlaris</p>
-                      {mekanik && mekanik.length > 0 ? mekanik.map((i) => <Card.Title as="h4">{i.mekanik} </Card.Title>) : <Card.Title as="h4">-</Card.Title>}
+                      {mekanik && mekanik.length > 0 ? mekanik.map((i) => <Card.Title as="h2">{i.mekanik} </Card.Title>) : <Card.Title as="h2">-</Card.Title>}
                     </div>
                   </Col>
                 </Row>
               </Card.Body>
               <Card.Footer>
                 <hr></hr>
-                {mekanik && mekanik.length > 0 ? mekanik.map((i) => <Card.Title as="h4">{formatRupiah(i.ongkos)} </Card.Title>) : <Card.Title as="h4">0</Card.Title>}
+                {mekanik && mekanik.length > 0 ? mekanik.map((i) => <Card.Title as="h2">{formatRupiah(i.ongkos)} </Card.Title>) : <Card.Title as="h2">0</Card.Title>}
               </Card.Footer>
             </Card>
           </Col>
@@ -100,14 +106,14 @@ function Dashboard() {
                   <Col xs="7">
                     <div className="numbers">
                       <p className="card-category">Transaksi Cash</p>
-                      {cash && cash.length > 0 ? cash.map((i) => <Card.Title as="h4">{i.tipeTransaksi} </Card.Title>) : <Card.Title as="h4">- </Card.Title>}
+                      {cash && cash.length > 0 ? cash.map((i) => <Card.Title as="h2">{i.tipeTransaksi} </Card.Title>) : <Card.Title as="h2">- </Card.Title>}
                     </div>
                   </Col>
                 </Row>
               </Card.Body>
               <Card.Footer>
                 <hr></hr>
-                {cash && cash.length > 0 ? cash.map((i) => <Card.Title as="h4">{formatRupiah(i.total)} </Card.Title>) : <Card.Title as="h4">0 </Card.Title>}
+                {cash && cash.length > 0 ? cash.map((i) => <Card.Title as="h2">{formatRupiah(i.total)} </Card.Title>) : <Card.Title as="h2">0 </Card.Title>}
               </Card.Footer>
             </Card>
           </Col>
@@ -123,14 +129,39 @@ function Dashboard() {
                   <Col xs="7">
                     <div className="numbers">
                       <p className="card-category">Transaksi Hutang</p>
-                      {hutang && hutang.length > 0 ? hutang.map((i) => <Card.Title as="h4">{i.tipeTransaksi} </Card.Title>) : <Card.Title as="h4">-</Card.Title>}
+                      {hutang && hutang.length > 0 ? hutang.map((i) => <Card.Title as="h2">{i.tipeTransaksi} </Card.Title>) : <Card.Title as="h2">-</Card.Title>}
                     </div>
                   </Col>
                 </Row>
               </Card.Body>
               <Card.Footer>
                 <hr></hr>
-                {hutang && hutang.length > 0 ? hutang.map((i) => <Card.Title as="h4">{formatRupiah(i.total)} </Card.Title>) : <Card.Title as="h4">0</Card.Title>}
+                {hutang && hutang.length > 0 ? hutang.map((i) => <Card.Title as="h2">{formatRupiah(i.total)} </Card.Title>) : <Card.Title as="h2">0</Card.Title>}
+              </Card.Footer>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col lg="3" sm="6">
+            <Card className="card-stats">
+              <Card.Body>
+                <Row>
+                  <Col xs="5">
+                    <div className="icon-big text-center icon-warning">
+                      <i className="nc-icon nc-single-copy-04 text-success"></i>
+                    </div>
+                  </Col>
+                  <Col xs="7">
+                    <div className="numbers">
+                      <p className="card-category">Transaksi Hari Ini</p>
+                      {transactionToday && transactionToday.length > 0 ? transactionToday.map((i) => <Card.Title as="h2">- </Card.Title>) : <Card.Title as="h2">-</Card.Title>}
+                    </div>
+                  </Col>
+                </Row>
+              </Card.Body>
+              <Card.Footer>
+                <hr></hr>
+                {transactionToday && transactionToday.length > 0 ? transactionToday.map((i) => <Card.Title as="h2">{i.count} </Card.Title>) : <Card.Title as="h2">0</Card.Title>}
               </Card.Footer>
             </Card>
           </Col>

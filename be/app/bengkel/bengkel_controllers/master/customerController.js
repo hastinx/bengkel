@@ -35,54 +35,66 @@ module.exports = {
     },
 
     add: async (req, res) => {
-        let { nama, hp, alamat } = req.body
+        let { nama, hp, alamat, kendaraan, no_plat } = req.body
 
         hp == undefined ? hp = "" : hp;
         alamat == undefined ? alamat = "" : alamat;
+        kendaraan == undefined ? kendaraan = "" : kendaraan;
+        no_plat == undefined ? no_plat = "" : no_plat;
+        try {
+            const [result] = await promise.query(`SELECT * FROM bkl_mst_customer WHERE hp='${hp}'`)
 
-        const [result] = await promise.query(`SELECT * FROM bkl_mst_customer WHERE hp='${hp}'`)
-
-        if (result.lenght > 0) {
-            return res.status(400).json({
-                status: 400,
-                message: 'Data customer sudah ada'
-            })
-        } else {
-            await promise.query(`INSERT INTO bkl_mst_customer (
+            if (result.lenght > 0) {
+                return res.status(400).json({
+                    status: 400,
+                    message: 'Data customer sudah ada'
+                })
+            } else {
+                await promise.query(`INSERT INTO bkl_mst_customer (
                 nama, 
                 hp, 
                 alamat,
+                kendaraan,
+                no_plat,
                 is_deleted,
                 createdAt)
              VALUES 
                 (
-                '${nama}',
+                '${nama.toUpperCase()}',
                 '${hp}',
-                '${alamat}',
+                '${alamat.toUpperCase()}',
+                '${kendaraan.toUpperCase()}',
+                '${no_plat.toUpperCase()}',
                 0,
                 now()
                 )`
-            )
-            return res.json({
-                status: 200,
-                message: 'Data customer berhasil ditambahkan'
-            })
+                )
+                return res.status(200).json({
+                    status: 'success',
+                    message: 'Data customer berhasil ditambahkan'
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ status: 'failed' })
         }
+
 
     },
 
     edit: async (req, res) => {
         try {
-            const { nama, hp, alamat } = req.body
+            const { nama, hp, alamat, kendaraan, no_plat } = req.body
             const id = req.params.id
 
-            await promise.query(`UPDATE bkl_mst_customer SET nama='${nama}',hp=${hp},alamat='${alamat}',updatedAt=now() WHERE id=${id}`)
+            await promise.query(`UPDATE bkl_mst_customer SET nama='${nama.toUpperCase()}',hp=${hp},alamat='${alamat.toUpperCase()}',kendaraan='${kendaraan.toUpperCase()}',no_plat='${no_plat.toUpperCase()}',updatedAt=now() WHERE id=${id}`)
 
             return res.json({
                 status: 200,
                 message: "Data customer berhasil diupdate"
             })
         } catch (error) {
+            console.log(error)
             return res.status(400).json({
                 message: 'Failed'
             })
@@ -99,5 +111,14 @@ module.exports = {
             status: 200,
             message: "Data customer berhasil dihapus"
         })
+    },
+    getByNoPlat: async (req, res) => {
+        try {
+            const [result] = await promise.query(`SELECT * FROM bkl_mst_customer WHERE no_plat='${req.query.noPlat}'`)
+
+            res.status(200).json({ status: 'success', values: result })
+        } catch (error) {
+            res.status(500).json({ status: 'failed' })
+        }
     }
 }

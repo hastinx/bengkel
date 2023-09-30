@@ -318,7 +318,7 @@ body > .navbar-collapse {
       body > .navbar-collapse .nav li .nav-link p {
         margin: 0;
         line-height: 31px;
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
         display: inline-flex; }
